@@ -1,8 +1,11 @@
+using UnityEngine;
+
 public abstract class PlayerState
 {
     protected PlayerController player;
     protected PlayerStateMachine stateMachine;
     protected int animHash;
+    protected float stateTimer; // 모든상태에서 타이머 할수있게 추가
 
     public PlayerState(PlayerController player, PlayerStateMachine stateMachine, string animName)
     {
@@ -11,9 +14,16 @@ public abstract class PlayerState
         this.animHash = UnityEngine.Animator.StringToHash(animName);
     }
 
-    public virtual void Enter() => player.animator.Play(animHash);
+    public virtual void Enter() 
+    {
+        player.animator.CrossFade(animHash,0.1f);
+        stateTimer = 0;
+    } 
     public virtual void HandleInput() { }
-    public virtual void LogicUpdate() { }
+    public virtual void LogicUpdate()
+    {
+        stateTimer += Time.deltaTime;
+    }
     public virtual void PhysicsUpdate() { }
     public virtual void Exit() { }
 }

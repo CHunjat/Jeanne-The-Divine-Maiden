@@ -7,8 +7,19 @@ public class PlayerIdleState : PlayerState
 
     public override void Enter()
     {
-        base.Enter();
+        //base.Enter();
+        stateTimer = 0f;
+        player.isSprinting = false;
         player.SetVelocity(0f, player.rb.linearVelocity.y);
+        if (player.wasSprinting)
+        {
+            player.animator.Play(player.anim_SprintBreak);
+            player.wasSprinting = false; // 신호 초기화
+        }
+        else
+        {
+            player.animator.CrossFade(animHash, 0.1f); // 기본 대기 모션
+        }
     }
 
     public override void LogicUpdate()
@@ -17,13 +28,14 @@ public class PlayerIdleState : PlayerState
 
         float xInput = player.inputReader.MoveValue.x;
 
-        if (player.inputReader.DashPressed)
+        if (player.inputReader.DashPressed && player.CanDash) // 쿨타임 확인 추가
         {
             player.inputReader.DashPressed = false;
             stateMachine.ChangeState(player.DashState);
             return;
-
         }
+        
+
         //점프
         if (player.inputReader.JumpPressed && player.IsGrounded())
         {

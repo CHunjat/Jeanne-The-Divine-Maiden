@@ -543,7 +543,7 @@ Transform:
   m_GameObject: {fileID: 1199457208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.232, z: 0}
+  m_LocalPosition: {x: 1, y: 0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -568,16 +568,25 @@ MonoBehaviour:
   moveSpeed: 7
   dashSpeed: 30
   dashDuration: 0.3
+  dashcooltime: 0.7
+  MaxJumpCount: 2
+  landDashDelay: 0.3
   isFacingRight: 1
-  jumpForce: 6
-  groundCheckSize: {x: -1.9, y: -0.05, z: 0.5}
-  groundCheckDistance: 0.01
+  jumpForce: 10
+  airDeceleration: 2
+  groundCheckSize: {x: -1.95, y: -0.06, z: 0.99}
+  groundCheckDistance: 0.06
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
+  sprintSpeed: 20
+  isSprinting: 0
+  wasSprinting: 0
+  anim_SprintStart: To sprint
+  anim_SprintIng: Sprinting
+  anim_SprintBreak: SprintBreak
+  anim_SprintJump: Sprint-jump-falling
+  anim_SprintLand: sprint-falling-land
 --- !u!54 &1199457215
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -602,9 +611,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 120
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &1199457216
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -638,7 +647,7 @@ GameObject:
   - component: {fileID: 1463467884}
   - component: {fileID: 1463467883}
   - component: {fileID: 1463467882}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -732,8 +741,8 @@ Transform:
   m_GameObject: {fileID: 1463467881}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.6238, y: -0.53, z: 0}
-  m_LocalScale: {x: 59.12577, y: 1.1222, z: 1}
+  m_LocalPosition: {x: 41.6565, y: -0.4627, z: 0}
+  m_LocalScale: {x: -170.27255, y: 1.2568641, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

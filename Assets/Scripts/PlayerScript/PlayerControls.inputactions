@@ -27,7 +27,7 @@
                 {
                     "name": "Jump",
                     "type": "Button",
-                    "id": "bbb2253a-f69b-4d5d-8809-5a41dae00ebb",
+                    "id": "2f107a21-ca6e-4796-bfde-36d80e5985d5",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -103,7 +103,7 @@
                 },
                 {
                     "name": "",
-                    "id": "d3592956-53b6-4213-92de-97a081fa7640",
+                    "id": "705e6378-1c7f-470a-8559-450fdaa8862b",
                     "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
