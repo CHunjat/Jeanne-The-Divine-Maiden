@@ -80,10 +80,16 @@ public class PlayerJumpState : PlayerState
 
         float xInput = player.inputReader.MoveValue.x;
         float currentXVelocity = player.rb.linearVelocity.x;
+        float facingDir = player.isFacingRight ? 1f : -1f;
 
         // 1. 대쉬 점프 속도 유지 로직
         // 현재 속도가 일반 이동 속도보다 빠르다면 (대쉬 중 점프했다는 뜻)
 
+        if (xInput == facingDir && player.IsTouchingWall(facingDir))
+        {
+            stateMachine.ChangeState(player.WallSlideState);
+            return;
+        }
         if (xInput != 0 && Mathf.Sign(xInput) != Mathf.Sign(currentXVelocity))
         {
             // 대쉬 관성을 즉시 무시하고 일반 이동 속도로 꺾어버림

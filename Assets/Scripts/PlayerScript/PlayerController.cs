@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -41,6 +42,14 @@ public class PlayerController : MonoBehaviour
     public float groundCheckDistance = 0.1f;
     public LayerMask groundLayer;
 
+    [Header("벽, 벽점프 관리 세팅")]
+    public float wallSlideSpeed = 2f;
+    public Vector2 wallJumpForce = new Vector2(10f, 12f);
+    public float wallCheckDistance = 0.1f;
+    public LayerMask wallLayer;
+    public Vector3 WallCheckSize = new Vector3(0.05f, 1.5f, 0.5f);
+
+
     [Header("대쉬후 전력질주기능")]
     public float sprintSpeed = 10f;
     public bool isSprinting;
@@ -52,6 +61,10 @@ public class PlayerController : MonoBehaviour
     public string anim_SprintBreak = "SprintBreak";
     public string anim_SprintJump = "Sprint-jump-falling";
     public string anim_SprintLand = "sprint-falling-land";
+
+    [Header("벽 애니메이션 관리변수")]
+    public string anim_WallSlide = "walling";
+    public string anim_WallJump = "WallJump";
 
 
     public void RestJumpCount() => currentjumpCount = MaxJumpCount;
@@ -78,6 +91,18 @@ public class PlayerController : MonoBehaviour
         // 여기서도 IsGrounded()를 호출하므로 내부적으로 groundLayer를 사용하게 됨
         Gizmos.color = IsGrounded() ? Color.green : Color.red;
         Gizmos.DrawWireCube(rayStartPos + Vector3.down * (groundCheckDistance + 0.1f), groundCheckSize);
+
+        Gizmos.color = Color.blue;
+        // 현재 바라보는 방향을 기준으로 박스가 어디에 맺히는지 그려줍니다.
+        float dir = isFacingRight ? 1f : -1f;
+        Vector3 origin = cd.bounds.center;
+        Vector3 boxSize = new Vector3(0.05f, cd.bounds.size.y * 0.9f, cd.bounds.size.z);
+
+        // 박스가 최종적으로 도달하는 위치 계산
+        Vector3 hitCenter = origin + (Vector3.right * dir * (cd.bounds.extents.x + wallCheckDistance));
+
+        // 파란색 박스 그리기
+        Gizmos.DrawWireCube(hitCenter, WallCheckSize);
     }
 
     public PlayerStateMachine StateMachine { get; private set; }
@@ -87,6 +112,8 @@ public class PlayerController : MonoBehaviour
     public PlayerJumpState JumpState { get; private set; }
     public PlayerAirState AirState { get; private set; }
     public PlayerLandState LandState { get; private set; }
+    public PlayerWallSlideState WallSlideState { get; private set; }
+    public PlayerWallJumpState WallJumpState { get; private set; }
 
     private void Awake()
     {
@@ -97,6 +124,8 @@ public class PlayerController : MonoBehaviour
         JumpState = new PlayerJumpState(this, StateMachine, "Jump");
         AirState = new PlayerAirState(this, StateMachine, "Falling");
         LandState = new PlayerLandState(this, StateMachine, "Landing");
+        WallSlideState = new PlayerWallSlideState(this, StateMachine, "walling");
+        WallJumpState = new PlayerWallJumpState(this, StateMachine, "WallJump");
 
 
 
@@ -151,6 +180,14 @@ public class PlayerController : MonoBehaviour
     {
         rb.linearVelocity = new Vector3(dashDir * dashSpeed, jumpForce, 0f);
     }
+    //벽체크 함수
+    public bool IsTouchingWall(float dir)
+    {
+        if(cd ==null) return false;
 
-   
+        Vector3 origin = cd.bounds.center;
+        Vector3 boxSize = new Vector3(0.05f, cd.bounds.size.y * 0.9f, cd.bounds.size.z);
+        return Physics.BoxCast(origin, WallCheckSize / 2f, Vector3.right * dir, transform.rotation, cd.bounds.extents.x + wallCheckDistance, wallLayer);
+    }
+
 }

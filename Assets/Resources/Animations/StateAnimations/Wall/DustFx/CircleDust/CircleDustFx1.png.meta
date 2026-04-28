@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 197eb685cd5c87f42ab5796385abb16b
+guid: 8afb29f7c01c61845af583ba6ffb7052
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,23 +123,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WallJump1_0
+      name: CircleDustFx1_0
       rect:
         serializedVersion: 2
-        x: 13
-        y: 9
-        width: 35
-        height: 33
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 37
+        y: 23
+        width: 20
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8f7f8852a92beee48a421f25a888ae80
-      internalID: 235632768
+      spriteID: dd5ffda5ab09b004d92540be4187006b
+      internalID: 463899366
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 71e7dbe4842876e4eb5ed8976af59a07
+    spriteID: ef5081ffde1811c48adfdad59dfe6aab
     internalID: 0
     vertices: []
     indices: 
@@ -158,9 +158,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":1,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":1,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      WallJump1_0: 235632768
+      CircleDustFx1_0: 463899366
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

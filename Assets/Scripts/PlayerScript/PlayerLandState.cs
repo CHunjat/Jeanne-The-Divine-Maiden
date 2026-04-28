@@ -9,12 +9,12 @@ public class PlayerLandState : PlayerState
     {
         //base.Enter();
         stateTimer = 0f;
-        // 착지 시 순간적으로 속도를 줄여 묵직함을 줍니다.
-        player.SetVelocity(0f, 0f);
+        
         player.ResetLandTimer();
         if (player.isSprinting)
         {
-            
+            float dir = player.isFacingRight ? 1f : -1f;
+            player.SetVelocity(dir * player.sprintSpeed, 0f); //착지 구르기 속도조절
             player.animator.Play(player.anim_SprintLand, 0,0); // 스프린트 착지+ 리셋
         }
         else
