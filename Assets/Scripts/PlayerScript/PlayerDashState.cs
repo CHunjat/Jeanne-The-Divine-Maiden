@@ -15,9 +15,14 @@ public class PlayerDashState : PlayerState
 
         player.rb.useGravity = false;
         dashTime = player.dashDuration;
-
         float xInput = player.inputReader.MoveValue.x;
+        dashDirection = xInput != 0 ? Mathf.Sign(xInput) : (player.isFacingRight ? 1f : -1f);
 
+        if (player.IsTouchingWall(dashDirection))
+        {
+            // 대쉬를 아예 시작하지 않고 return;
+            return;
+        }
         // 대쉬 시작 시점의 방향 결정
         if (xInput != 0)
         {
@@ -35,6 +40,7 @@ public class PlayerDashState : PlayerState
     {
         base.Exit();
         player.rb.useGravity = true;
+        player.SetVelocity(0f, player.rb.linearVelocity.y); //비비기 대시 방어코드 끝나면 속도 0으로 맞추기
 
     }
 
@@ -49,6 +55,25 @@ public class PlayerDashState : PlayerState
     {
         base.LogicUpdate();
         dashTime -= Time.deltaTime;
+
+        //대쉬중 벽에 닿으면 벽슬라이딩
+        if (player.IsTouchingWall(dashDirection))
+        {
+            player.ResetDashCooldown();
+            if(!player.IsGrounded())
+            {
+                stateMachine.ChangeState(player.WallSlideState);
+            }
+            else
+            {
+                if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
+                    stateMachine.ChangeState(player.MoveState);
+                else
+                    stateMachine.ChangeState(player.IdleState);
+            }
+            return;
+            
+        }
 
         if (player.inputReader.JumpPressed)
         {

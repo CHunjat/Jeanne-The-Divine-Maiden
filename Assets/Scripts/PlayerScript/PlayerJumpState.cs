@@ -10,16 +10,36 @@ public class PlayerJumpState : PlayerState
     public override void Enter()
     {
         //base.Enter();
-        stateTimer = 0f;
 
-        player.UseJump();
+        if (player.isSprinting && !player.CanSprintJump)
+        {
+            player.inputReader.JumpPressed = false;
+            player.SetVelocity(player.rb.linearVelocity.x, 0f);
+
+            player.isJumpCut = true; //상세설명 플레이어컨트롤러에 있음
+
+            stateMachine.ChangeState(player.MoveState);
+            return;
+        }
+
+        stateTimer = 0f;
+        player.wallGrabTimer = player.wallGrabCooldown;
 
         if (player.isSprinting)
         {
-            player.animator.Play(player.anim_SprintJump);
+            //쿨타임적용
+            player.ResetSprintJumpCooldown();
+
+            //반복문돌려서 유즈점프를 다돌리고 (캔점프가 될때까지)
+            while(player.CanJump)
+            {
+                player.UseJump();
+            }
+            player.animator.Play(player.anim_SprintJump);//실행한다.
         }
         else
         {
+            player.UseJump();
             player.animator.CrossFade(animHash, 0.1f); // 일반 점프 모션
         }
         //player.isSprinting = false;
@@ -80,15 +100,24 @@ public class PlayerJumpState : PlayerState
 
         float xInput = player.inputReader.MoveValue.x;
         float currentXVelocity = player.rb.linearVelocity.x;
-        float facingDir = player.isFacingRight ? 1f : -1f;
 
         // 1. 대쉬 점프 속도 유지 로직
         // 현재 속도가 일반 이동 속도보다 빠르다면 (대쉬 중 점프했다는 뜻)
 
-        if ((xInput * facingDir) > 0.1f && player.IsTouchingWall(facingDir))
+        if (Mathf.Abs(xInput) > 0.1f)
         {
-            stateMachine.ChangeState(player.WallSlideState);
-            return;
+            // 2. 누르고 있는 방향을 1 또는 -1로 정규화 (손가락의 의지)
+            float inputDir = Mathf.Sign(xInput);
+
+            // 3. 타이머(쿨타임)가 끝났는지 확인 + 누른 방향(inputDir)으로 레이더 발사!
+            if (player.wallGrabTimer <= 0f && player.IsTouchingWall(inputDir))
+            {
+                // 4. 상승 중일 때 너무 일찍 붙는 게 싫다면 추가 조건 (선택 사항)
+                // if (player.rb.linearVelocity.y < 2f) 
+
+                stateMachine.ChangeState(player.WallSlideState);
+                return;
+            }
         }
         if (xInput != 0 && Mathf.Sign(xInput) != Mathf.Sign(currentXVelocity))
         {

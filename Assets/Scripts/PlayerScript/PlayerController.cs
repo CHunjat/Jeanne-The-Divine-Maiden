@@ -61,15 +61,33 @@ public class PlayerController : MonoBehaviour
     public string anim_SprintBreak = "SprintBreak";
     public string anim_SprintJump = "Sprint-jump-falling";
     public string anim_SprintLand = "sprint-falling-land";
+    //스프린트 점프 쿨타임 변수
+    public float sprintJumpCooldown = 0.5f; // 스프린트 점프 후 대기 시간
+    private float sprintJumpCooldownTimer;
+    public bool isJumpCut; //쿨타임때문에 점프가 캔슬되었는지 기록, 쿨타임이 안돌았는데 스프린트 점프시 다시 movestate로 돌아가는 코드로 스프린트애니메이션이 다시 재생되는 현상으로 컷내려고만듦
+
 
     [Header("벽 애니메이션 관리변수")]
     public string anim_WallSlide = "walling";
     public string anim_WallJump = "WallJump";
 
+    [Header("점프 직후 벽감지 쿨타임 추가")]
+    public float wallGrabCooldown = 0.2f;
+    public float wallGrabTimer;
+    
+
 
     public void RestJumpCount() => currentjumpCount = MaxJumpCount;
     public bool CanJump => currentjumpCount > 0;
     public void UseJump() => currentjumpCount--;
+
+    //스프린트 점프 쿨타임 리셋함수
+    public void ResetSprintJumpCooldown()
+    {
+        sprintJumpCooldownTimer = sprintJumpCooldown; // 
+    }
+    //프로퍼티
+    public bool CanSprintJump => sprintJumpCooldownTimer <= 0;
 
 
     public bool IsGrounded()
@@ -93,15 +111,16 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireCube(rayStartPos + Vector3.down * (groundCheckDistance + 0.1f), groundCheckSize);
 
         Gizmos.color = Color.blue;
-        // 현재 바라보는 방향을 기준으로 박스가 어디에 맺히는지 그려줍니다.
-        float dir = isFacingRight ? 1f : -1f;
+        DrawWallGizmo(1f);
+        DrawWallGizmo(-1f);
+
+    }
+
+    private void DrawWallGizmo(float dir)
+    {
         Vector3 origin = cd.bounds.center;
-        Vector3 boxSize = new Vector3(0.05f, cd.bounds.size.y * 0.9f, cd.bounds.size.z);
-
-        // 박스가 최종적으로 도달하는 위치 계산
-        Vector3 hitCenter = origin + (Vector3.right * dir * (cd.bounds.extents.x + wallCheckDistance));
-
-        // 파란색 박스 그리기
+        float checkDist = cd.bounds.extents.x + wallCheckDistance;
+        Vector3 hitCenter = origin + (Vector3.right * dir * checkDist);
         Gizmos.DrawWireCube(hitCenter, WallCheckSize);
     }
 
@@ -137,6 +156,14 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+
+        if (sprintJumpCooldownTimer > 0)
+            sprintJumpCooldownTimer -= Time.deltaTime;
+
+        //지상에서점프시 벽판정쿨타임
+        if (wallGrabTimer > 0)
+        { wallGrabTimer -= Time.deltaTime; }
+
         if(dashCooltimer > 0 )
             dashCooltimer -= Time.deltaTime;
         if(landTimer >0) landTimer -= Time.deltaTime;   

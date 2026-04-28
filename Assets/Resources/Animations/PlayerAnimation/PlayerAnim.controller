@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: walling
-  m_Speed: 1
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -69,11 +69,11 @@ AnimatorStateMachine:
     m_State: {fileID: 3741276403635034575}
     m_Position: {x: 600, y: 540, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: -2407719547649833328}
-    m_Position: {x: 30, y: 700, z: 0}
-  - serializedVersion: 1
     m_State: {fileID: -8114404011540912031}
     m_Position: {x: 30, y: 620, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -1999402694619165219}
+    m_Position: {x: 30, y: 670, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -214,7 +214,7 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-2407719547649833328
+--- !u!1102 &-1999402694619165219
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
@@ -222,7 +222,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WallJump
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []

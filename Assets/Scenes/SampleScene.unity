@@ -805,12 +805,12 @@ MonoBehaviour:
     m_Bits: 128
   wallSlideSpeed: 2
   wallJumpForce: {x: 10, y: 12}
-  wallCheckDistance: 0.07
+  wallCheckDistance: 0.1
   wallLayer:
     serializedVersion: 2
     m_Bits: 256
   WallCheckSize: {x: 0.05, y: 1.56, z: 0.5}
-  sprintSpeed: 20
+  sprintSpeed: 12
   isSprinting: 0
   wasSprinting: 0
   anim_SprintStart: To sprint
@@ -818,8 +818,12 @@ MonoBehaviour:
   anim_SprintBreak: SprintBreak
   anim_SprintJump: Sprint-jump-falling
   anim_SprintLand: sprint-falling-land
+  sprintJumpCooldown: 2
+  isJumpCut: 0
   anim_WallSlide: walling
   anim_WallJump: WallJump
+  wallGrabCooldown: 0.3
+  wallGrabTimer: 0
 --- !u!54 &1199457215
 Rigidbody:
   m_ObjectHideFlags: 0

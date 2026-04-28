@@ -11,7 +11,12 @@ public class PlayerMoveState : PlayerState
 
         if (player.isSprinting)
         {
-            player.animator.Play(player.anim_SprintStart); // 전력질주면 즉시 SprintStart로 덮어씌움!
+            if (!player.isJumpCut) //점프 쿨타임 때문에 돌아온 게 아닐 때만 
+            {
+                player.animator.Play(player.anim_SprintStart);
+            } //시작 모션 재생 SprintStart로 덮어씌운다.
+
+            player.isJumpCut = false; //꺼준다 캬 존나잘된다 ㅅㅂ
         }
         else
         {

@@ -29,6 +29,8 @@ public class PlayerAirState : PlayerState
     {
         base.LogicUpdate();
 
+
+
         // : BoxCollider 기반 착지 판정
         // 위로 솟구치는 중이 아니고(y <= 0.1f), 컨트롤러의 IsGrounded가 true일 때
         if (player.rb.linearVelocity.y <= 0.1f && player.IsGrounded())
@@ -57,14 +59,33 @@ public class PlayerAirState : PlayerState
         }
         #region 벽타기 진입스위치 및 코드 
         float xInput = player.inputReader.MoveValue.x;
-        float facingDir = player.isFacingRight ? 1f : -1f;
+        //float facingDir = player.isFacingRight ? 1f  : -1f;
 
         // 누르는 방향과 바라보는 방향이 같고 + 벽에 닿았고 + 아래로 떨어지는 중일 때
-        if ((xInput * facingDir) > 0.1f && player.IsTouchingWall(facingDir) && player.rb.linearVelocity.y < 0f)
+        //if (player.wallGrabTimer <= 0f && (xInput * facingDir) > 0.1f && player.IsTouchingWall(facingDir) && player.rb.linearVelocity.y < 0f)
+        //{
+        //    stateMachine.ChangeState(player.WallSlideState);
+        //    return;
+        //}
+
+        if (Mathf.Abs(xInput) > 0.1f)
         {
-            stateMachine.ChangeState(player.WallSlideState);
-            return;
+            // 2. 누르고 있는 방향을 1 또는 -1로 정규화 (손가락의 의지)
+            float inputDir = Mathf.Sign(xInput);
+
+            // 3. 타이머(쿨타임)가 끝났는지 확인 + 누른 방향(inputDir)으로 레이더 발사!
+            if (player.wallGrabTimer <= 0f && player.IsTouchingWall(inputDir))
+            {
+                // 4. 상승 중일 때 너무 일찍 붙는 게 싫다면 추가 조건 (선택 사항)
+                // if (player.rb.linearVelocity.y < 2f) 
+
+                stateMachine.ChangeState(player.WallSlideState);
+                return;
+            }
         }
+
+
+
         #endregion
     }
 
