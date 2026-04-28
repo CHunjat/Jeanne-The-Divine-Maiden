@@ -789,16 +789,16 @@ MonoBehaviour:
   rb: {fileID: 1199457215}
   cd: {fileID: 1199457216}
   animator: {fileID: 1199457209}
-  moveSpeed: 7
-  dashSpeed: 30
+  moveSpeed: 4.2
+  dashSpeed: 18
   dashDuration: 0.3
   dashcooltime: 0.7
   MaxJumpCount: 2
   landDashDelay: 0.3
   isFacingRight: 1
-  jumpForce: 10
-  airDeceleration: 2
-  groundCheckSize: {x: -1.45, y: -0.01, z: 0.99}
+  jumpForce: 8
+  airDeceleration: 1
+  groundCheckSize: {x: -0.87, y: -0.01, z: 0.99}
   groundCheckDistance: 0.01
   groundLayer:
     serializedVersion: 2

@@ -14,7 +14,19 @@ public class PlayerWallSlideState : PlayerState
         player.isSprinting = false;
 
         // 벽 방향 확인 (오른쪽이면 1, 왼쪽이면 -1)
-        wallDir = player.isFacingRight ? 1f : -1f;
+        if (player.IsTouchingWall(1f))
+        {
+            wallDir = 1f;  // 캐릭터가 어디 보든 상관없이 오른쪽에 벽이 있음!
+        }
+        else if (player.IsTouchingWall(-1f))
+        {
+            wallDir = -1f; // 왼쪽에 벽이 있음!
+        }
+        else
+        {
+            // 혹시라도 에러 날 때를 대비한 안전장치 (유저가 누른 방향키 기준)
+            wallDir = player.inputReader.MoveValue.x > 0 ? 1f : -1f;
+        }
 
 
         player.FlipController(-wallDir); // 벽 등지기

@@ -183,11 +183,15 @@ public class PlayerController : MonoBehaviour
     //벽체크 함수
     public bool IsTouchingWall(float dir)
     {
-        if(cd ==null) return false;
+        if (cd == null) return false;
 
         Vector3 origin = cd.bounds.center;
-        Vector3 boxSize = new Vector3(0.05f, cd.bounds.size.y * 0.9f, cd.bounds.size.z);
-        return Physics.BoxCast(origin, WallCheckSize / 2f, Vector3.right * dir, transform.rotation, cd.bounds.extents.x + wallCheckDistance, wallLayer);
+
+        // BoxCast (시작점, 박스크기/2, 방향, 회전, 거리, 레이어)
+        // 거리는 콜라이더 절반 + 설정한 체크 거리
+        float checkDist = cd.bounds.extents.x + wallCheckDistance;
+
+        return Physics.BoxCast(origin, WallCheckSize / 2f, Vector3.right * dir, transform.rotation, checkDist, wallLayer);
     }
 
 }
