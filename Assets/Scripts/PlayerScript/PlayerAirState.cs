@@ -60,7 +60,7 @@ public class PlayerAirState : PlayerState
         float facingDir = player.isFacingRight ? 1f : -1f;
 
         // 누르는 방향과 바라보는 방향이 같고 + 벽에 닿았고 + 아래로 떨어지는 중일 때
-        if (xInput == facingDir && player.IsTouchingWall(facingDir) && player.rb.linearVelocity.y < 0f)
+        if ((xInput * facingDir) > 0.1f && player.IsTouchingWall(facingDir) && player.rb.linearVelocity.y < 0f)
         {
             stateMachine.ChangeState(player.WallSlideState);
             return;

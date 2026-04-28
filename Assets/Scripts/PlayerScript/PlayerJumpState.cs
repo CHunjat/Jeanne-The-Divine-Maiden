@@ -85,7 +85,7 @@ public class PlayerJumpState : PlayerState
         // 1. 대쉬 점프 속도 유지 로직
         // 현재 속도가 일반 이동 속도보다 빠르다면 (대쉬 중 점프했다는 뜻)
 
-        if (xInput == facingDir && player.IsTouchingWall(facingDir))
+        if ((xInput * facingDir) > 0.1f && player.IsTouchingWall(facingDir))
         {
             stateMachine.ChangeState(player.WallSlideState);
             return;
