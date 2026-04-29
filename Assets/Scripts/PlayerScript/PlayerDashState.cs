@@ -56,7 +56,7 @@ public class PlayerDashState : PlayerState
         base.LogicUpdate();
         dashTime -= Time.deltaTime;
 
-        //대쉬중 벽에 닿으면 벽슬라이딩
+        //예외처리로직  및 대쉬후 체인지 스테이트로 변경
         if (player.IsTouchingWall(dashDirection))
         {
             player.ResetDashCooldown();
@@ -101,12 +101,12 @@ public class PlayerDashState : PlayerState
 
         player.ResetDashCooldown();
 
+        //대쉬후 스프린트연결
         if (player.IsGrounded())
         {
             if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
             {
                 player.isSprinting = true;
-                //player.animator.Play(player.anim_SprintStart); // 시작 모션 즉시 재생
                 stateMachine.ChangeState(player.MoveState);
             }
             else

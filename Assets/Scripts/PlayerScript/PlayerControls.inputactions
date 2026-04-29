@@ -32,6 +32,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ATK",
+                    "type": "Button",
+                    "id": "12cab57b-8e70-46ee-aadf-488456a3947d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -93,7 +102,7 @@
                 {
                     "name": "",
                     "id": "2742475f-ae49-48e6-a68b-1c37c5724b96",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -104,11 +113,22 @@
                 {
                     "name": "",
                     "id": "705e6378-1c7f-470a-8559-450fdaa8862b",
-                    "path": "<Keyboard>/leftShift",
+                    "path": "<Keyboard>/leftAlt",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "54907c05-f604-4f67-b73f-42e234355156",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ATK",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

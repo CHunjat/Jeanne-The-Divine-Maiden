@@ -19,16 +19,15 @@ public class PlayerController : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashcooltime = 1.5f;
     private float dashCooltimer;
-    public int MaxJumpCount = 2;
-    private int currentjumpCount;
 
-    [Header("착지딜레이 버니합금지")] 
+
+    [Header("착지딜레이 버니합금지")]
     public float landDashDelay = 0.5f;
     private float landTimer;
 
 
-    public bool CanDash => dashCooltimer <= 0 && landTimer <=0;
-  
+    public bool CanDash => dashCooltimer <= 0 && landTimer <= 0;
+
 
     [Header("Orientation")]
     public bool isFacingRight = true;
@@ -36,6 +35,12 @@ public class PlayerController : MonoBehaviour
     [Header("점프랑 공중세팅")]
     public float jumpForce = 12f; // 인스펙터에서 조절 가능
     public float airDeceleration = 5f;
+    public int MaxJumpCount = 2;
+    private int currentjumpCount;
+    public void RestJumpCount() => currentjumpCount = MaxJumpCount;
+    public bool CanJump => currentjumpCount > 0;
+    public void UseJump() => currentjumpCount--;
+
 
     [Header("Ground Check Settings (BoxCast)")]
     public Vector3 groundCheckSize = new Vector3(0.5f, 0.1f, 0.5f);
@@ -74,12 +79,14 @@ public class PlayerController : MonoBehaviour
     [Header("점프 직후 벽감지 쿨타임 추가")]
     public float wallGrabCooldown = 0.2f;
     public float wallGrabTimer;
-    
+
+    [Header("공격 관리")]
+    public PlayerAttack1State Attack1State { get; private set; }
+    public PlayerAttack2State Attack2State { get; private set; }
+    public PlayerAttack3State Attack3State { get; private set; }
 
 
-    public void RestJumpCount() => currentjumpCount = MaxJumpCount;
-    public bool CanJump => currentjumpCount > 0;
-    public void UseJump() => currentjumpCount--;
+
 
     //스프린트 점프 쿨타임 리셋함수
     public void ResetSprintJumpCooldown()
@@ -134,6 +141,10 @@ public class PlayerController : MonoBehaviour
     public PlayerWallSlideState WallSlideState { get; private set; }
     public PlayerWallJumpState WallJumpState { get; private set; }
 
+
+
+    public PlayerAttack1State AttackState { get; private set; }
+
     private void Awake()
     {
         StateMachine = new PlayerStateMachine();
@@ -145,6 +156,9 @@ public class PlayerController : MonoBehaviour
         LandState = new PlayerLandState(this, StateMachine, "Landing");
         WallSlideState = new PlayerWallSlideState(this, StateMachine, "walling");
         WallJumpState = new PlayerWallJumpState(this, StateMachine, "WallJump");
+        Attack1State = new PlayerAttack1State(this, StateMachine, "ATK1");
+        Attack2State = new PlayerAttack2State(this, StateMachine, "ATK2");
+        Attack3State = new PlayerAttack3State(this, StateMachine, "ATK3");
 
 
 
@@ -164,11 +178,11 @@ public class PlayerController : MonoBehaviour
         if (wallGrabTimer > 0)
         { wallGrabTimer -= Time.deltaTime; }
 
-        if(dashCooltimer > 0 )
+        if (dashCooltimer > 0)
             dashCooltimer -= Time.deltaTime;
-        if(landTimer >0) landTimer -= Time.deltaTime;   
+        if (landTimer > 0) landTimer -= Time.deltaTime;
 
-        if(inputReader.DashPressed && !CanDash)
+        if (inputReader.DashPressed && !CanDash)
         {
             inputReader.DashPressed = false;
         }
@@ -221,4 +235,17 @@ public class PlayerController : MonoBehaviour
         return Physics.BoxCast(origin, WallCheckSize / 2f, Vector3.right * dir, transform.rotation, checkDist, wallLayer);
     }
 
+    //4.29 시작, 공격 분배기 함수
+    public void HandleAttackInput()
+    {
+        // 1. 방금 1단계에서 만든 InputReader를 통해 공격을 눌렀는지 확인 (확인 즉시 값은 false로 깎임)
+        if (!inputReader.AttackPressed) return;
+
+        // 2. 만약 땅에 있고, 콤보 중이 아니라면? -> 1타 발동!
+        if (IsGrounded() && StateMachine.CurrentState != Attack1State)
+        {
+            StateMachine.ChangeState(Attack1State);
+        }
+
+    }
 }

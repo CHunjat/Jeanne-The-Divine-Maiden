@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f634f91d49d33cd4ebce4dfb972c8c88
+guid: d82957b9f2540c34d8738eefe16e57d6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,23 +123,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ComboAtk28_0
+      name: FrontLightAtk9_0
       rect:
         serializedVersion: 2
-        x: 35
-        y: 2
-        width: 31
-        height: 36
-      alignment: 9
-      pivot: {x: 0.3548387, y: -0}
+        x: 36
+        y: 34
+        width: 11
+        height: 19
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6582351ebddece644837f2f7c06e074c
-      internalID: 263720077
+      spriteID: 3ffc2ddbd733a5d40a4d538fc50a63e8
+      internalID: 858481222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FrontLightAtk9_1
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 8
+        width: 67
+        height: 45
+      alignment: 9
+      pivot: {x: 0.6567164, y: -0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ac23d8f5bfe44846a8cc1b6dc5e1958
+      internalID: 1608299390
       vertices: []
       indices: 
       edges: []
@@ -148,7 +170,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: ed6eab12850ec8042bc8e13ebed97d79
+    spriteID: bba9342ce4477864c828e1402791614b
     internalID: 0
     vertices: []
     indices: 
@@ -160,7 +182,8 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":1,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      ComboAtk28_0: 263720077
+      FrontLightAtk9_0: 858481222
+      FrontLightAtk9_1: 1608299390
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

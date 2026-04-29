@@ -793,11 +793,11 @@ MonoBehaviour:
   dashSpeed: 18
   dashDuration: 0.3
   dashcooltime: 0.7
-  MaxJumpCount: 2
   landDashDelay: 0.3
   isFacingRight: 1
   jumpForce: 8
   airDeceleration: 1
+  MaxJumpCount: 2
   groundCheckSize: {x: -0.87, y: -0.01, z: 0.99}
   groundCheckDistance: 0.01
   groundLayer:

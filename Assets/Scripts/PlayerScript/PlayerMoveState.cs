@@ -8,7 +8,7 @@ public class PlayerMoveState : PlayerState
     {
         //base.Enter(); // 기본 Move가 틀어지지만
         stateTimer = 0f;
-
+       
         if (player.isSprinting)
         {
             if (!player.isJumpCut) //점프 쿨타임 때문에 돌아온 게 아닐 때만 
@@ -16,7 +16,7 @@ public class PlayerMoveState : PlayerState
                 player.animator.Play(player.anim_SprintStart);
             } //시작 모션 재생 SprintStart로 덮어씌운다.
 
-            player.isJumpCut = false; //꺼준다 캬 존나잘된다 ㅅㅂ
+            player.isJumpCut = false; //꺼준다
         }
         else
         {
@@ -26,7 +26,7 @@ public class PlayerMoveState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-
+        player.HandleAttackInput();
         if (player.isSprinting)
         {
             // Sprint_Start 애니메이션이 끝났는지 체크 (normalizedTime이 1.0을 넘으면 종료)
@@ -42,6 +42,7 @@ public class PlayerMoveState : PlayerState
         {
             if (player.isSprinting)
             {
+                player.wasSprinting = true;
                 player.animator.Play(player.anim_SprintBreak); // 급정지 모션 재생
             }
             //player.isSprinting = false;
@@ -55,7 +56,7 @@ public class PlayerMoveState : PlayerState
             return;
         }
 
-        // 멈추면 Idle로
+        // 일반 run멈추면 Idle로
         if (player.inputReader.MoveValue.x == 0)
         {
             //player.isSprinting = false;

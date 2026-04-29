@@ -10,13 +10,12 @@ public class PlayerJumpState : PlayerState
     public override void Enter()
     {
         //base.Enter();
-
         if (player.isSprinting && !player.CanSprintJump)
         {
             player.inputReader.JumpPressed = false;
             player.SetVelocity(player.rb.linearVelocity.x, 0f);
 
-            player.isJumpCut = true; //상세설명 플레이어컨트롤러에 있음
+            player.isJumpCut = true; 
 
             stateMachine.ChangeState(player.MoveState);
             return;
@@ -46,7 +45,7 @@ public class PlayerJumpState : PlayerState
         player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
 
         // 현재 수평 속도가 거의 없다면 (수직 점프 상황 방지)
-        // 대쉬 중이었던 방향을 강제로 읽어서 속도를 꽂아넣습니다.
+        // 대쉬 중이었던 방향을 강제로 읽어서 속도를할당
         float moveX = player.inputReader.MoveValue.x;
 
         // 입력이 없으면 제자리점프

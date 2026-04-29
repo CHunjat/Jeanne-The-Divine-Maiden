@@ -25,7 +25,7 @@ public class PlayerIdleState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-
+        player.HandleAttackInput();
         float xInput = player.inputReader.MoveValue.x;
 
         if (player.inputReader.DashPressed && player.CanDash) // 쿨타임 확인 추가

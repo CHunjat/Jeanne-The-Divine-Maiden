@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f634f91d49d33cd4ebce4dfb972c8c88
+guid: ee603eb633d156748868439f4069d77c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,23 +123,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ComboAtk28_0
+      name: FrontLightAtk8_0
       rect:
         serializedVersion: 2
-        x: 35
-        y: 2
-        width: 31
-        height: 36
+        x: 36
+        y: 8
+        width: 84
+        height: 45
       alignment: 9
-      pivot: {x: 0.3548387, y: -0}
+      pivot: {x: 0.52380955, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6582351ebddece644837f2f7c06e074c
-      internalID: 263720077
+      spriteID: 0c88cd496a29bd64fbb9f70ffd35bd81
+      internalID: 167310594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FrontLightAtk8_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 34
+        width: 19
+        height: 8
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8fdb2ddaa0edfa47866087bc284fea5
+      internalID: -1967286910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FrontLightAtk8_2
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 27
+        width: 5
+        height: 4
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1203ebef5dc4fc84991a38d6bed173c9
+      internalID: -315980186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FrontLightAtk8_3
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 15
+        width: 4
+        height: 7
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7a1549d51af44b4899992875c76f0c1
+      internalID: 1622220667
       vertices: []
       indices: 
       edges: []
@@ -148,7 +214,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: ed6eab12850ec8042bc8e13ebed97d79
+    spriteID: e723161f55198bf4bb8b8e4aac908129
     internalID: 0
     vertices: []
     indices: 
@@ -160,7 +226,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":1,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      ComboAtk28_0: 263720077
+      FrontLightAtk8_0: 167310594
+      FrontLightAtk8_1: -1967286910
+      FrontLightAtk8_2: -315980186
+      FrontLightAtk8_3: 1622220667
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
