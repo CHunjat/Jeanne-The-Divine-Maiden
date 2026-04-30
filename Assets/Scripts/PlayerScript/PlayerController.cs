@@ -166,7 +166,7 @@ public class PlayerController : MonoBehaviour
 
         HeavyReadyState = new PlayerHeavyReadyState(this, StateMachine, "Idle");
         HeavyChargeState = new PlayerHeavyChargeState(this, StateMachine, "ToCharge");
-        HeavyAttackState = new PlayerHeavyAttackState(this, StateMachine, "HeavyAttackAnim");
+        HeavyAttackState = new PlayerHeavyAttackState(this, StateMachine, "ChargingAtk");
 
 
         if (rb == null) rb = GetComponent<Rigidbody>(); //리지드바디 할당
@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour
         {
             RestJumpCount();
         }
+        HandleHeavyAttackInput();
 
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
@@ -269,5 +270,26 @@ public class PlayerController : MonoBehaviour
             StateMachine.ChangeState(Attack1State);
         }
 
+    }
+
+    //헤비공격 분배기 함수
+    public void HandleHeavyAttackInput()
+    {
+        // 1. F키를 눌렀을 때 발급된 티켓이 있는지 확인
+        if (!inputReader.HAttackPressed) return;
+
+        if (StateMachine.CurrentState is PlayerAttackState)
+        {
+            Debug.Log("현재 공격 중이라 강공격 입력을 무시합니다.");
+            return;
+        }
+
+        // 2. 땅에 있고, 이미 기모으기 준비 중이 아닐 때만 진입
+        if (IsGrounded() && StateMachine.CurrentState != HeavyReadyState &&
+            StateMachine.CurrentState != HeavyChargeState && StateMachine.CurrentState != HeavyAttackState)
+        {
+            // 판독기(ReadyState)로 보냅니다.
+            StateMachine.ChangeState(HeavyReadyState);
+        }
     }
 }

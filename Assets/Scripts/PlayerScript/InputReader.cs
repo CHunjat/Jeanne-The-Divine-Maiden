@@ -39,23 +39,7 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
 
     //기모으기 누르고있는지 확인하는 bool 변수
     public bool HeavyAttackHeld;
-    public void OnHeavyAttack(InputAction.CallbackContext context)
-    {
-        // 누르기 시작한 "딱 그 프레임"
-        if (context.started)
-        {
-            HAttackPressed = true;   // 분배기를 통과하기 위한 입장권!
-            HeavyAttackHeld = true;  // 지금부터 기모으기 시작!
-        }
-        // 손을 떼는 순간
-        else if (context.canceled)
-        {
-            HeavyAttackHeld = false; // 기모으기 종료!
-        }
-    }
-
-    //누르고 떼기 하나 그냥 누르기 하나
-
+    
 
     
     private bool _AttackPressed;

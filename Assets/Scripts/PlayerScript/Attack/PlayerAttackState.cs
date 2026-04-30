@@ -38,7 +38,7 @@ public abstract class PlayerAttackState : PlayerState
     }
 
     // 현재 애니메이션이 얼마나 재생되었는지(0.0 ~ 1.0) 퍼센트로 가져오는 함수
-    protected float GetNormalizedTime()
+    public float GetNormalizedTime() //헤비에서 사용하게 public 으로 변경
     {
         AnimatorStateInfo stateInfo = player.animator.GetCurrentAnimatorStateInfo(0);
 
