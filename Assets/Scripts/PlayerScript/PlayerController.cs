@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
     public PlayerAttack2State Attack2State { get; private set; }
     public PlayerAttack3State Attack3State { get; private set; }
 
-
+    public PlayerDashAttackState DashAndSprintATK { get; private set; }
 
 
     //스프린트 점프 쿨타임 리셋함수
@@ -141,9 +141,12 @@ public class PlayerController : MonoBehaviour
     public PlayerWallSlideState WallSlideState { get; private set; }
     public PlayerWallJumpState WallJumpState { get; private set; }
 
-
+    public PlayerHeavyReadyState HeavyReadyState { get; private set; }
+    public PlayerHeavyChargeState HeavyChargeState { get; private set; }
+    public PlayerHeavyAttackState HeavyAttackState { get; private set; }
 
     public PlayerAttack1State AttackState { get; private set; }
+    
 
     private void Awake()
     {
@@ -159,7 +162,11 @@ public class PlayerController : MonoBehaviour
         Attack1State = new PlayerAttack1State(this, StateMachine, "ATK1");
         Attack2State = new PlayerAttack2State(this, StateMachine, "ATK2");
         Attack3State = new PlayerAttack3State(this, StateMachine, "ATK3");
+        DashAndSprintATK = new PlayerDashAttackState(this, StateMachine, "Dash(Sprint)ATK");
 
+        HeavyReadyState = new PlayerHeavyReadyState(this, StateMachine, "Idle");
+        HeavyChargeState = new PlayerHeavyChargeState(this, StateMachine, "ToCharge");
+        HeavyAttackState = new PlayerHeavyAttackState(this, StateMachine, "HeavyAttackAnim");
 
 
         if (rb == null) rb = GetComponent<Rigidbody>(); //리지드바디 할당
@@ -186,6 +193,11 @@ public class PlayerController : MonoBehaviour
         {
             inputReader.DashPressed = false;
         }
+        //테스트 공격중일떄는 대시 입력을 강제로 차단
+        if (StateMachine.CurrentState is PlayerAttackState && inputReader.DashPressed)
+        {
+            inputReader.DashPressed = false;
+        }
 
         if (IsGrounded() && rb.linearVelocity.y <= 0.1f)
         {
@@ -207,6 +219,9 @@ public class PlayerController : MonoBehaviour
 
     public void FlipController(float xInput)
     {
+
+       
+
         if (xInput > 0) isFacingRight = true;
         else if (xInput < 0) isFacingRight = false;
 
@@ -241,6 +256,13 @@ public class PlayerController : MonoBehaviour
         // 1. 방금 1단계에서 만든 InputReader를 통해 공격을 눌렀는지 확인 (확인 즉시 값은 false로 깎임)
         if (!inputReader.AttackPressed) return;
 
+        if (StateMachine.CurrentState == DashState || isSprinting)
+        {
+            // 대시 어택 진입 시 스프린트 상태를 강제로 꺼주는 게 좋습니다 (무한 질주 버그 방지)
+            //isSprinting = false;
+            StateMachine.ChangeState(DashAndSprintATK); 
+            return;
+        }
         // 2. 만약 땅에 있고, 콤보 중이 아니라면? -> 1타 발동!
         if (IsGrounded() && StateMachine.CurrentState != Attack1State)
         {

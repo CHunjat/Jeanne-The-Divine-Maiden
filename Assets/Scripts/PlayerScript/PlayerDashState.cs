@@ -54,6 +54,7 @@ public class PlayerDashState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        player.HandleAttackInput(); //대쉬 어택과 스프린트 어택을 나누기위해 대쉬중 어택받기만 추가!!
         dashTime -= Time.deltaTime;
 
         //예외처리로직  및 대쉬후 체인지 스테이트로 변경

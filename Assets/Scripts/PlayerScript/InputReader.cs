@@ -23,6 +23,41 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
         //중복 실행이 물리적으로 불가능
     }
 
+    private bool _HAttackPressed;
+
+    public bool HAttackPressed
+    {
+        get
+        {
+            bool value = _HAttackPressed;
+            _HAttackPressed = false;
+            return value;
+
+        }
+        set => _HAttackPressed = value;
+    }
+
+    //기모으기 누르고있는지 확인하는 bool 변수
+    public bool HeavyAttackHeld;
+    public void OnHeavyAttack(InputAction.CallbackContext context)
+    {
+        // 누르기 시작한 "딱 그 프레임"
+        if (context.started)
+        {
+            HAttackPressed = true;   // 분배기를 통과하기 위한 입장권!
+            HeavyAttackHeld = true;  // 지금부터 기모으기 시작!
+        }
+        // 손을 떼는 순간
+        else if (context.canceled)
+        {
+            HeavyAttackHeld = false; // 기모으기 종료!
+        }
+    }
+
+    //누르고 떼기 하나 그냥 누르기 하나
+
+
+    
     private bool _AttackPressed;
     public bool AttackPressed
     {
@@ -35,6 +70,8 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
         set => _AttackPressed = value;
         
     }
+
+
 
     private void OnEnable()
     {
@@ -75,6 +112,20 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
         else if (context.canceled)
         {
             AttackPressed = false;
+        }
+    }
+
+    public void OnHATK(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            HAttackPressed = true;   // 분배기(Controller)를 뚫고 ReadyState
+            HeavyAttackHeld = true;  // 지금부터 계속 누르고 있다는 스위치 
+        }
+        // F키에서 손가락을 떼는 순간
+        else if (context.canceled)
+        {
+            HeavyAttackHeld = false; // 누름 상태 스위치 OFF!
         }
     }
 }

@@ -29,13 +29,12 @@ public class PlayerAttack1State : PlayerAttackState
 
 
 
-        // 2. 애니메이션이 60% 이상 진행됐고, 예약이 걸려 있다면? -> 2타로 캔슬!
-        // (이 0.6f 수치를 조절해서 콤보가 이어지는 쫀득한 타이밍을 찾으세요)
+        // 2. 애니메이션이 70% 이상 진행됐고, 예약이 걸려 있다면? -> 2타로 캔슬
+        // (이 0.6f 수치를 조절해서 콤보가 이어지는 쫀득한 타이밍찾기)
         if (comboInputRegistered && stateTimer > 0.1f && GetNormalizedTime() >= 0.7f)
         {
             stateMachine.ChangeState(player.Attack2State); // 2타 스크립트면 Attack3State로
         }
     }
 
-    // (나중에 여기에 2타로 넘어가는 콤보 로직을 추가할 겁니다)
 }
