@@ -13,8 +13,6 @@ public class PlayerHeavyAttackState : PlayerAttackState
         comboInputRegistered = false;
 
         // [타격감 팁] 
-        // 록맨 제로나 던파처럼 무기를 휘두를 때 캐릭터가 묵직하게 한 발자국 쑥! 밀고 나가게 하고 싶다면
-        // 아래 주석을 풀고 전진 관성을 주시면 됩니다. (현재는 제자리 공격으로 세팅)
 
         /* 
         float facingDir = player.isFacingRight ? 1f : -1f;

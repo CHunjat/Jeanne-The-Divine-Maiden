@@ -1,89 +1,120 @@
+using UnityEngine;
+
 public class PlayerMoveState : PlayerState
 {
     public PlayerMoveState(PlayerController player, PlayerStateMachine stateMachine, string animName)
         : base(player, stateMachine, animName) { }
 
-
     public override void Enter()
     {
-        //base.Enter(); // 기본 Move가 틀어지지만
         stateTimer = 0f;
-       
+        player.wasSprinting = false;
+
         if (player.isSprinting)
         {
-            if (!player.isJumpCut) //점프 쿨타임 때문에 돌아온 게 아닐 때만 
+            if (!player.isJumpCut)
             {
                 player.animator.Play(player.anim_SprintStart);
-            } //시작 모션 재생 SprintStart로 덮어씌운다.
-
-            player.isJumpCut = false; //꺼준다
+            }
+            
+            player.isJumpCut = false;
         }
         else
         {
-            player.animator.CrossFade(animHash, 0.1f); // 기본 달리기 모션
+            player.animator.CrossFade(animHash, 0.1f);
         }
     }
+
     public override void LogicUpdate()
     {
-        base.LogicUpdate();
-        player.HandleAttackInput();
-        if (player.isSprinting)
+        // [1] 입력을 미리 받아둠
+        float xInput = player.inputReader.MoveValue.x;
+        var stateInfo = player.animator.GetCurrentAnimatorStateInfo(0);
+
+        // ★ [핵심 1] 점프와 대쉬를 로직 최상단으로 이동!
+        // 이렇게 해야 브레이크 애니메이션이 재생 중(return)이라도 점프가 씹히지 않습니다.
+        if (player.inputReader.JumpPressed && player.IsGrounded())
         {
-            // Sprint_Start 애니메이션이 끝났는지 체크 (normalizedTime이 1.0을 넘으면 종료)
-            var stateInfo = player.animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.IsName(player.anim_SprintStart) && stateInfo.normalizedTime >= 1.0f)
-            {
-                player.animator.Play(player.anim_SprintIng); // 시작이 끝나면 루프 재생
-            }
+            player.inputReader.JumpPressed = false;
+            player.wasSprinting = false; // 플래그 리셋
+            // isSprinting을 여기서 끄지 않아야 공중에서도 스프린트 상태가 유지되어 '스프린트 점프'가 됩니다.
+            stateMachine.ChangeState(player.JumpState);
+            return;
         }
 
-        // 멈췄을 때
-        if (player.inputReader.MoveValue.x == 0)
-        {
-            if (player.isSprinting)
-            {
-                player.wasSprinting = true;
-                player.animator.Play(player.anim_SprintBreak); // 급정지 모션 재생
-            }
-            //player.isSprinting = false;
-            stateMachine.ChangeState(player.IdleState);
-        }
-        // 대쉬 전환
-        if (player.inputReader.DashPressed && player.CanDash) // 쿨타임 확인 추가
+        if (player.inputReader.DashPressed && player.CanDash)
         {
             player.inputReader.DashPressed = false;
+            player.wasSprinting = false;
             stateMachine.ChangeState(player.DashState);
             return;
         }
 
-        // 일반 run멈추면 Idle로
-        if (player.inputReader.MoveValue.x == 0)
+      
+        // [2] 브레이크 중에는 부모 클래스의 기본 애니메이션 간섭 차단
+        if (!(xInput == 0 && player.isSprinting))
         {
-            //player.isSprinting = false;
+            base.LogicUpdate();
+        }
+
+       
+            player.HandleAttackInput();
+        
+
+        // [3] 정지 로직 (x == 0)
+        if (xInput == 0)
+        {
+            if (player.isSprinting)
+            {
+                if (!player.wasSprinting)
+                {
+                    player.wasSprinting = true;
+                    player.animator.Play(player.anim_SprintBreak);
+                }
+
+                // 애니메이션이 98% 끝날 때까지 여기서 가둬둠
+                if (stateInfo.IsName(player.anim_SprintBreak))
+                {
+                    if (stateInfo.normalizedTime < 0.98f) return;
+                }
+                else { return; }
+
+                // 브레이크가 완전히 끝난 후에만 상태 해제
+                player.isSprinting = false;
+                player.wasSprinting = false;
+            }
+
             stateMachine.ChangeState(player.IdleState);
             return;
         }
-        //점프
-        if (player.inputReader.JumpPressed && player.IsGrounded())
+
+        // [4] 이동 및 스프린트 유지 로직 (x != 0)
+        player.wasSprinting = false;
+
+        if (player.isSprinting)
         {
-            //player.isSprinting = false;
-            player.inputReader.JumpPressed = false; // 입력 초기화
-            stateMachine.ChangeState(player.JumpState);
+            if (!stateInfo.IsName(player.anim_SprintStart) && !stateInfo.IsName(player.anim_SprintIng))
+            {
+                player.animator.Play(player.anim_SprintIng);
+            }
+
+            if (stateInfo.IsName(player.anim_SprintStart) && stateInfo.normalizedTime >= 1.0f)
+            {
+                player.animator.Play(player.anim_SprintIng);
+            }
         }
-        
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-
         float xInput = player.inputReader.MoveValue.x;
 
-        // ★ 누락됐던 반전 호출 코드!
         if (xInput != 0)
         {
             player.FlipController(xInput);
         }
+
         float currentSpeed = player.isSprinting ? player.sprintSpeed : player.moveSpeed;
         player.SetVelocity(xInput * currentSpeed, player.rb.linearVelocity.y);
     }

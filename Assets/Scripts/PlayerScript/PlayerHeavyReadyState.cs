@@ -10,6 +10,7 @@ public class PlayerHeavyReadyState : PlayerState
 
     public override void Enter()
     {
+       
         base.Enter();
         // 공격할 준비를 하니 그 자리에 멈춰 세웁니다.
         player.SetVelocity(0f, player.rb.linearVelocity.y);

@@ -19,13 +19,13 @@ public class PlayerDashAttackState : PlayerAttackState
         // ex: 일반 이동 속도의 1.5배 ~ 2배
         if (player.isSprinting)
         {
-            slideSpeed = player.moveSpeed * 2.5f;
+            slideSpeed = player.moveSpeed * 1.2f;
             player.isSprinting = false;
 
         }
         else
         {
-            slideSpeed = player.moveSpeed * 1.5f; // 만약 dashSpeed가 너무 빠르면 player.moveSpeed * 1.5f 로 조절
+            slideSpeed = player.moveSpeed * 1.0f; // 만약 dashSpeed가 너무 빠르면 player.moveSpeed * 1.5f 로 조절
 
         }
     }

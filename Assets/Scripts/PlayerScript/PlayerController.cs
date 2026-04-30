@@ -278,9 +278,16 @@ public class PlayerController : MonoBehaviour
         // 1. F키를 눌렀을 때 발급된 티켓이 있는지 확인
         if (!inputReader.HAttackPressed) return;
 
-        if (StateMachine.CurrentState is PlayerAttackState)
+        if (StateMachine.CurrentState is PlayerAttackState )
         {
             Debug.Log("현재 공격 중이라 강공격 입력을 무시합니다.");
+            inputReader.HAttackPressed = false;
+            return;
+        }
+        //스프린트중 강공격막음 없애려면 이거 지워라 
+        if (isSprinting)
+        {
+            inputReader.HAttackPressed = false;
             return;
         }
 
