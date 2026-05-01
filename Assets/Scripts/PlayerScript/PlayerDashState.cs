@@ -15,9 +15,14 @@ public class PlayerDashState : PlayerState
 
         player.rb.useGravity = false;
         dashTime = player.dashDuration;
-
         float xInput = player.inputReader.MoveValue.x;
+        dashDirection = xInput != 0 ? Mathf.Sign(xInput) : (player.isFacingRight ? 1f : -1f);
 
+        if (player.IsTouchingWall(dashDirection))
+        {
+            // 대쉬를 아예 시작하지 않고 return;
+            return;
+        }
         // 대쉬 시작 시점의 방향 결정
         if (xInput != 0)
         {
@@ -35,6 +40,7 @@ public class PlayerDashState : PlayerState
     {
         base.Exit();
         player.rb.useGravity = true;
+        player.SetVelocity(0f, player.rb.linearVelocity.y); //비비기 대시 방어코드 끝나면 속도 0으로 맞추기
 
     }
 
@@ -48,7 +54,27 @@ public class PlayerDashState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        player.HandleAttackInput(); //대쉬 어택과 스프린트 어택을 나누기위해 대쉬중 어택받기만 추가!!
         dashTime -= Time.deltaTime;
+
+        //예외처리로직  및 대쉬후 체인지 스테이트로 변경
+        if (player.IsTouchingWall(dashDirection))
+        {
+            player.ResetDashCooldown();
+            if(!player.IsGrounded())
+            {
+                stateMachine.ChangeState(player.WallSlideState);
+            }
+            else
+            {
+                if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
+                    stateMachine.ChangeState(player.MoveState);
+                else
+                    stateMachine.ChangeState(player.IdleState);
+            }
+            return;
+            
+        }
 
         if (player.inputReader.JumpPressed)
         {
@@ -76,12 +102,12 @@ public class PlayerDashState : PlayerState
 
         player.ResetDashCooldown();
 
+        //대쉬후 스프린트연결
         if (player.IsGrounded())
         {
             if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
             {
                 player.isSprinting = true;
-                //player.animator.Play(player.anim_SprintStart); // 시작 모션 즉시 재생
                 stateMachine.ChangeState(player.MoveState);
             }
             else

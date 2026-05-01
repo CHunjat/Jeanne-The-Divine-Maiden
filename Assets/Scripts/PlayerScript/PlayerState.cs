@@ -20,6 +20,13 @@ public abstract class PlayerState
         stateTimer = 0;
     } 
     public virtual void HandleInput() { }
+
+    protected float GetNormalizedTime()
+    {
+        // 현재 0번 레이어에서 재생 중인 애니메이션 정보 가져오기
+        AnimatorStateInfo currentInfo = player.animator.GetCurrentAnimatorStateInfo(0);
+        return currentInfo.normalizedTime;
+    }
     public virtual void LogicUpdate()
     {
         stateTimer += Time.deltaTime;

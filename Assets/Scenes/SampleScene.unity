@@ -768,8 +768,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -38.04, y: 0.188, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -789,28 +789,28 @@ MonoBehaviour:
   rb: {fileID: 1199457215}
   cd: {fileID: 1199457216}
   animator: {fileID: 1199457209}
-  moveSpeed: 7
-  dashSpeed: 30
+  moveSpeed: 4.2
+  dashSpeed: 18
   dashDuration: 0.3
   dashcooltime: 0.7
-  MaxJumpCount: 2
   landDashDelay: 0.3
   isFacingRight: 1
-  jumpForce: 10
-  airDeceleration: 2
-  groundCheckSize: {x: -1.45, y: -0.01, z: 0.99}
+  jumpForce: 8
+  airDeceleration: 1
+  MaxJumpCount: 2
+  groundCheckSize: {x: -0.87, y: -0.01, z: 0.99}
   groundCheckDistance: 0.01
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
   wallSlideSpeed: 2
   wallJumpForce: {x: 10, y: 12}
-  wallCheckDistance: 0.09
+  wallCheckDistance: 0.1
   wallLayer:
     serializedVersion: 2
     m_Bits: 256
-  WallCheckSize: {x: 0.09, y: 2.55, z: 0.5}
-  sprintSpeed: 20
+  WallCheckSize: {x: 0.05, y: 1.56, z: 0.5}
+  sprintSpeed: 12
   isSprinting: 0
   wasSprinting: 0
   anim_SprintStart: To sprint
@@ -818,8 +818,12 @@ MonoBehaviour:
   anim_SprintBreak: SprintBreak
   anim_SprintJump: Sprint-jump-falling
   anim_SprintLand: sprint-falling-land
+  sprintJumpCooldown: 2
+  isJumpCut: 0
   anim_WallSlide: walling
   anim_WallJump: WallJump
+  wallGrabCooldown: 0.3
+  wallGrabTimer: 0
 --- !u!54 &1199457215
 Rigidbody:
   m_ObjectHideFlags: 0

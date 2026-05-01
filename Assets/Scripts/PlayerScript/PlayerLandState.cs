@@ -9,7 +9,8 @@ public class PlayerLandState : PlayerState
     {
         //base.Enter();
         stateTimer = 0f;
-        
+        player.SetVelocity(0f, player.rb.linearVelocity.y);
+
         player.ResetLandTimer();
         if (player.isSprinting)
         {

@@ -29,6 +29,22 @@ public class PlayerWallJumpState : PlayerState
         player.wallJumpForce.y, 0f);
     }
 
+    public override void Exit()
+    {
+        base.Exit();
+
+        float xInput = player.inputReader.MoveValue.x;
+        float currentX = player.rb.linearVelocity.x;
+
+        // [핵심] 벽 점프 관성과 유저 입력 방향이 반대라면?
+        // 관성을 죽이고 유저가 누르는 방향으로 속도를 즉시 전환할 준비를 합니다.
+        if (xInput != 0 && Mathf.Sign(xInput) != Mathf.Sign(currentX))
+        {
+            // 관성을 절반 이하로 깎거나 일반 이동 속도로 덮어버림
+            player.SetVelocity(xInput * player.moveSpeed, player.rb.linearVelocity.y);
+        }
+    }
+
     public override void LogicUpdate()
     {
         base.LogicUpdate();

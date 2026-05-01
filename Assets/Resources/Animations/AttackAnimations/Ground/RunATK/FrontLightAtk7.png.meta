@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ea47a2d2a04aaad4f8d7e94544496fc8
+guid: cfde86bedbdd66148a108a402a3b5b2a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,23 +123,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WallJump2_0
+      name: FrontLightAtk7_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 7
-        width: 39
-        height: 39
+        x: 34
+        y: 8
+        width: 94
+        height: 40
       alignment: 7
-      pivot: {x: 0.5, y: 0}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1901c3c4ee6c88f478050fe841ebffda
-      internalID: 413296196
+      spriteID: 2aebd28d5c2c4d94585f04885e35b14e
+      internalID: 2102520731
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 06acd9aff034973409f5719292ae4431
+    spriteID: 4be11d96489e4bf4d9da7af3d9032b35
     internalID: 0
     vertices: []
     indices: 
@@ -160,7 +160,7 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":1,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      WallJump2_0: 413296196
+      FrontLightAtk7_0: 2102520731
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
