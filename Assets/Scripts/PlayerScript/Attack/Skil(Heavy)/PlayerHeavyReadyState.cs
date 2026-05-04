@@ -12,7 +12,7 @@ public class PlayerHeavyReadyState : PlayerState
     {
        
         base.Enter();
-        // 공격할 준비를 하니 그 자리에 멈춰 세웁니다.
+        // 공격할 준비를 하니 그 자리에 멈추기
         player.SetVelocity(0f, player.rb.linearVelocity.y);
     }
 
@@ -26,15 +26,15 @@ public class PlayerHeavyReadyState : PlayerState
     {
         base.LogicUpdate();
 
-        // 1. 0.15초를 못 버티고 손을 뗐다! -> 짧게 누른 것으로 판정 (일반 강공격)
+        // 1. 변수이용 0.15초를 기준으로 
         if (!player.inputReader.HeavyAttackHeld)
         {
-            // TODO: 일반 강공격 State가 따로 있다면 거기로, 없다면 일단 Attack1State로 보냅니다.
+            // TODO: 일반 강공격 State가 따로 있다면 거기로, 없으면 Attack1State로
             stateMachine.ChangeState(player.Attack1State);
             return;
         }
 
-        // 2. 0.15초 동안 끝까지 꾹 누르고 버텼다! -> 진짜 기모으기(차지)로 인정!
+        // 2. 0.15초 동안 끝까지 꾹 누르고 버티면-> 진짜 기모으기(차지)
         if (stateTimer >= waitTime)
         {
             stateMachine.ChangeState(player.HeavyChargeState);

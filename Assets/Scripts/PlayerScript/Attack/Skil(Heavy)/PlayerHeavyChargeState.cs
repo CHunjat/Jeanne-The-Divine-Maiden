@@ -2,7 +2,6 @@
 
 public class PlayerHeavyChargeState : PlayerState
 {
-    private float chargeThreshold = 0.4f;
     private bool isFullyCharged;
     private float fullChargeTime = 1.2f;
     private bool isLoopAnimStarted;

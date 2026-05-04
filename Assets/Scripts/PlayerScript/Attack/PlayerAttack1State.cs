@@ -3,7 +3,7 @@ using UnityEngine;
 // 상속을 PlayerState가 아니라 방금 만든 PlayerAttackState로 받습니다!
 public class PlayerAttack1State : PlayerAttackState
 {
-    private bool comboInputRegistered; // 다음 공격 예약 여부
+    private new bool comboInputRegistered; // 다음 공격 예약 여부
     public PlayerAttack1State(PlayerController player, PlayerStateMachine stateMachine, string animName)
         : base(player, stateMachine, animName) { }
 

@@ -41,6 +41,6 @@ public class PlayerHeavyAttackState : PlayerAttackState
 
         // ※ 부모 클래스인 PlayerAttackState.cs의 LogicUpdate에 
         // if (GetNormalizedTime() >= 1.0f) stateMachine.ChangeState(player.IdleState); 
-        // 이 코드가 이미 들어있기 때문에, 애니메이션이 끝나면 알아서 깔끔하게 Idle로 돌아갈 겁니다!
+        // 이 코드가 이미 들어있기 때문에, 애니메이션이 끝나면 알아서 깔끔하게 Idle로 전환
     }
 }

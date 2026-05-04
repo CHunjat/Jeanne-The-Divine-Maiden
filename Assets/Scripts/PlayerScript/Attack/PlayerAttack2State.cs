@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAttack2State : PlayerAttackState
 {
-    private bool comboInputRegistered;
+    private new bool comboInputRegistered;
 
     public PlayerAttack2State(PlayerController player, PlayerStateMachine stateMachine, string animName)
         : base(player, stateMachine, animName) { }
@@ -10,7 +10,7 @@ public class PlayerAttack2State : PlayerAttackState
     public override void Enter()
     {
         base.Enter();
-        comboInputRegistered = false;
+        base.comboInputRegistered = false;
        
         player.SetVelocity(0f, player.rb.linearVelocity.y);
     }
@@ -22,13 +22,13 @@ public class PlayerAttack2State : PlayerAttackState
         if (player.inputReader.AttackPressed)
         {
             player.inputReader.AttackPressed = false;
-            comboInputRegistered = true;
+            base.comboInputRegistered = true;
         }
 
 
 
         // 2타에서 3타로 넘어가는 타이밍 (마찬가지로 0.6f 조절)
-        if (comboInputRegistered && stateTimer > 0.1f && GetNormalizedTime() >= 0.7f)
+        if (base.comboInputRegistered && stateTimer > 0.1f && GetNormalizedTime() >= 0.7f)
         {
             stateMachine.ChangeState(player.Attack3State); // 2타 스크립트면 Attack3State로
         }
