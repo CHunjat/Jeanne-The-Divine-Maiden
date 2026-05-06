@@ -27,6 +27,13 @@ public class PlayerMoveState : PlayerState
 
     public override void LogicUpdate()
     {
+
+        if (!player.IsGrounded())
+        { 
+
+            stateMachine.ChangeState(player.AirState);
+            return;
+        }
         // [1] 입력을 미리 받아둠
         float xInput = player.inputReader.MoveValue.x;
         var stateInfo = player.animator.GetCurrentAnimatorStateInfo(0);

@@ -129,9 +129,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""HATK"",
+                    ""name"": ""Skill"",
                     ""type"": ""Button"",
                     ""id"": ""6178cea2-ea26-4786-8b45-f3bc1907c6b4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ThrustATK"",
+                    ""type"": ""Button"",
+                    ""id"": ""e57d9b01-1665-4289-a03c-89fecc84228b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -230,11 +239,22 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""82bddcb9-bf46-478f-b1cb-c10f808feba9"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5df257d7-87f8-486d-b426-12c962cfbcc5"",
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HATK"",
+                    ""action"": ""ThrustATK"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -249,7 +269,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_ATK = m_Player.FindAction("ATK", throwIfNotFound: true);
-        m_Player_HATK = m_Player.FindAction("HATK", throwIfNotFound: true);
+        m_Player_Skill = m_Player.FindAction("Skill", throwIfNotFound: true);
+        m_Player_ThrustATK = m_Player.FindAction("ThrustATK", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -334,7 +355,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_ATK;
-    private readonly InputAction m_Player_HATK;
+    private readonly InputAction m_Player_Skill;
+    private readonly InputAction m_Player_ThrustATK;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -363,9 +385,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ATK => m_Wrapper.m_Player_ATK;
         /// <summary>
-        /// Provides access to the underlying input action "Player/HATK".
+        /// Provides access to the underlying input action "Player/Skill".
         /// </summary>
-        public InputAction @HATK => m_Wrapper.m_Player_HATK;
+        public InputAction @Skill => m_Wrapper.m_Player_Skill;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ThrustATK".
+        /// </summary>
+        public InputAction @ThrustATK => m_Wrapper.m_Player_ThrustATK;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -404,9 +430,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ATK.started += instance.OnATK;
             @ATK.performed += instance.OnATK;
             @ATK.canceled += instance.OnATK;
-            @HATK.started += instance.OnHATK;
-            @HATK.performed += instance.OnHATK;
-            @HATK.canceled += instance.OnHATK;
+            @Skill.started += instance.OnSkill;
+            @Skill.performed += instance.OnSkill;
+            @Skill.canceled += instance.OnSkill;
+            @ThrustATK.started += instance.OnThrustATK;
+            @ThrustATK.performed += instance.OnThrustATK;
+            @ThrustATK.canceled += instance.OnThrustATK;
         }
 
         /// <summary>
@@ -430,9 +459,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ATK.started -= instance.OnATK;
             @ATK.performed -= instance.OnATK;
             @ATK.canceled -= instance.OnATK;
-            @HATK.started -= instance.OnHATK;
-            @HATK.performed -= instance.OnHATK;
-            @HATK.canceled -= instance.OnHATK;
+            @Skill.started -= instance.OnSkill;
+            @Skill.performed -= instance.OnSkill;
+            @Skill.canceled -= instance.OnSkill;
+            @ThrustATK.started -= instance.OnThrustATK;
+            @ThrustATK.performed -= instance.OnThrustATK;
+            @ThrustATK.canceled -= instance.OnThrustATK;
         }
 
         /// <summary>
@@ -502,11 +534,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnATK(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "HATK" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Skill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnHATK(InputAction.CallbackContext context);
+        void OnSkill(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ThrustATK" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnThrustATK(InputAction.CallbackContext context);
     }
 }

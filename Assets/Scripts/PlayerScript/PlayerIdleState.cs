@@ -28,6 +28,14 @@ public class PlayerIdleState : PlayerState
         player.HandleAttackInput();
         float xInput = player.inputReader.MoveValue.x;
 
+        //idle 시 갑자기 공중으로 떨어졌을때 air 스테이트로 넘겨주는 코드
+        if (!player.IsGrounded())
+        {
+            stateMachine.ChangeState(player.AirState);
+            return;
+        }
+
+
         if (player.inputReader.DashPressed && player.CanDash) // 쿨타임 확인 추가
         {
             player.inputReader.DashPressed = false;

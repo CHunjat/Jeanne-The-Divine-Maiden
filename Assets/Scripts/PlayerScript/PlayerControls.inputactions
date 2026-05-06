@@ -43,9 +43,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "HATK",
+                    "name": "Skill",
                     "type": "Button",
                     "id": "6178cea2-ea26-4786-8b45-f3bc1907c6b4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThrustATK",
+                    "type": "Button",
+                    "id": "e57d9b01-1665-4289-a03c-89fecc84228b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -144,11 +153,22 @@
                 {
                     "name": "",
                     "id": "82bddcb9-bf46-478f-b1cb-c10f808feba9",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5df257d7-87f8-486d-b426-12c962cfbcc5",
                     "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HATK",
+                    "action": "ThrustATK",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

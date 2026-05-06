@@ -71,6 +71,10 @@ public class PlayerController : MonoBehaviour
     private float sprintJumpCooldownTimer;
     public bool isJumpCut; //쿨타임때문에 점프가 캔슬되었는지 기록, 쿨타임이 안돌았는데 스프린트 점프시 다시 movestate로 돌아가는 코드로 스프린트애니메이션이 다시 재생되는 현상으로 컷내려고만듦
 
+    [Header("강공 찌르기 애니메이션 관리변수")] //스킬X 스킬아님!!
+    public string anim_ThrustReady = "MiddleToCharge"; // 기 모으기 모션 이름
+    public string anim_ThrustAtk = "MiddleChargeATK";  // 찌르기 모션 이름
+
 
     [Header("벽 애니메이션 관리변수")]
     public string anim_WallSlide = "walling";
@@ -88,6 +92,10 @@ public class PlayerController : MonoBehaviour
     public PlayerDashAttackState DashAndSprintATK { get; private set; }
 
 
+    [Header("Thrust Attack Settings")]
+    public AnimationCurve thrustVelocityCurve; // 찌르기 속도 그래프
+    public float thrustDuration = 0.5f;        // 찌르기 전체 지속 시간 (초)
+
     //스프린트 점프 쿨타임 리셋함수
     public void ResetSprintJumpCooldown()
     {
@@ -100,10 +108,9 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded()
     {
         if (cd == null) return false;
-
-        // 시작점을 약간 위로 올려서 파묻힘 방지
         Vector3 rayStartPos = new Vector3(cd.bounds.center.x, cd.bounds.min.y + 0.1f, cd.bounds.center.z);
-        // groundLayer 하나만 사용!
+
+        // groundCheckSize를 인스펙터에서 받아와서 사용
         return Physics.BoxCast(rayStartPos, groundCheckSize / 2, Vector3.down, transform.rotation, groundCheckDistance + 0.1f, groundLayer);
     }
 
@@ -145,8 +152,14 @@ public class PlayerController : MonoBehaviour
     public PlayerHeavyChargeState HeavyChargeState { get; private set; }
     public PlayerHeavyAttackState HeavyAttackState { get; private set; }
 
-    public PlayerAttack1State AttackState { get; private set; }
-    
+    public PlayerThrustReadyState ThrustReadyState { get; private set; }
+    public PlayerThrustAttackState ThrustAttackState { get; private set; }
+
+    //public PlayerAttack1State AttackState { get; private set; }
+
+
+
+
 
     private void Awake()
     {
@@ -157,8 +170,10 @@ public class PlayerController : MonoBehaviour
         JumpState = new PlayerJumpState(this, StateMachine, "Jump");
         AirState = new PlayerAirState(this, StateMachine, "Falling");
         LandState = new PlayerLandState(this, StateMachine, "Landing");
+
         WallSlideState = new PlayerWallSlideState(this, StateMachine, "walling");
         WallJumpState = new PlayerWallJumpState(this, StateMachine, "WallJump");
+
         Attack1State = new PlayerAttack1State(this, StateMachine, "ATK1");
         Attack2State = new PlayerAttack2State(this, StateMachine, "ATK2");
         Attack3State = new PlayerAttack3State(this, StateMachine, "ATK3");
@@ -168,6 +183,9 @@ public class PlayerController : MonoBehaviour
         HeavyChargeState = new PlayerHeavyChargeState(this, StateMachine, "ToCharge");
         HeavyAttackState = new PlayerHeavyAttackState(this, StateMachine, "ChargingAtk");
 
+
+        ThrustReadyState = new PlayerThrustReadyState(this, StateMachine, "MiddleToCharge");
+        ThrustAttackState = new PlayerThrustAttackState(this, StateMachine, "MiddleChargeATK");
 
         if (rb == null) rb = GetComponent<Rigidbody>(); //리지드바디 할당
         if (cd == null) cd = GetComponent<BoxCollider>(); // 콜라이더 할당
@@ -203,7 +221,10 @@ public class PlayerController : MonoBehaviour
         {
             RestJumpCount();
         }
-        HandleHeavyAttackInput();
+
+        //딱 idle, move에서만 가능
+        HandleThrustAttackInput(); //강공찌르기 판독기 추가
+        HandleHeavyAttackInput(); //스킬찌르기 판독기 추가
 
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
@@ -259,8 +280,7 @@ public class PlayerController : MonoBehaviour
 
         if (StateMachine.CurrentState == DashState || isSprinting)
         {
-            // 대시 어택 진입 시 스프린트 상태를 강제로 꺼주는 게 좋습니다 (무한 질주 버그 방지)
-            //isSprinting = false;
+            // 대시 어택 진입 시 스프린트 상태를 강제로 끄기
             StateMachine.ChangeState(DashAndSprintATK); 
             return;
         }
@@ -272,10 +292,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    //헤비공격 분배기 함수
+    //스킬공격 분배기 함수
     public void HandleHeavyAttackInput()
     {
-        // 1. F키를 눌렀을 때 발급된 티켓이 있는지 확인
+        // 1.
         if (!inputReader.HAttackPressed) return;
 
         if (StateMachine.CurrentState is PlayerAttackState )
@@ -284,7 +304,7 @@ public class PlayerController : MonoBehaviour
             inputReader.HAttackPressed = false;
             return;
         }
-        //스프린트중 강공격막음 없애려면 이거 지워라 
+        //스프린트중 강공격막음 없애려면 이거 지워라 기획;;
         if (isSprinting)
         {
             inputReader.HAttackPressed = false;
@@ -297,6 +317,29 @@ public class PlayerController : MonoBehaviour
         {
             // 판독기(ReadyState)로 보냅니다.
             StateMachine.ChangeState(HeavyReadyState);
+        }
+    }
+
+    //강공 찌르기
+    public void HandleThrustAttackInput()
+    {
+        // 1. 찌르기 키(예: 중간 공격키)가 눌려있는지 확인
+        // (InputReader에서 키를 꾹 누르고 있는 동안 ThrustPressed가 true라고 가정)
+        if (!inputReader.ThrustAttackPressed) return;
+
+        // 2. [입구 컷] 스프린트 중에는 멈춰서 찌르기 준비를 하면 조작감이 깨지므로 무시!
+        if (isSprinting)
+        {
+            inputReader.ThrustAttackPressed = false;
+            return;
+        }
+
+        // 3. 땅에 있고, 이미 공격 중이거나 차지 중이 아닐 때만 진입
+        if (IsGrounded() &&!(StateMachine.CurrentState is PlayerAttackState)
+            && StateMachine.CurrentState != ThrustReadyState && StateMachine.CurrentState != ThrustAttackState)
+        {
+            // 찌르기 준비(기 모으기) 상태로 보냄
+            StateMachine.ChangeState(ThrustReadyState);
         }
     }
 }
