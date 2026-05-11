@@ -63,6 +63,7 @@ public class PlayerJumpState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        player.HandleAttackInput();
 
         //상승중 언제든지 점프대시 가능하도록 코드추가
         if (player.inputReader.DashPressed && player.CanDash)

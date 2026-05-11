@@ -28,7 +28,7 @@ public class PlayerAirState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-
+        player.HandleAttackInput(); //떨어질때도 공중공격 가능
 
 
         // : BoxCollider 기반 착지 판정

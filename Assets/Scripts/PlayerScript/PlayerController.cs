@@ -96,6 +96,25 @@ public class PlayerController : MonoBehaviour
     public AnimationCurve thrustVelocityCurve; // 찌르기 속도 그래프
     public float thrustDuration = 0.5f;        // 찌르기 전체 지속 시간 (초)
 
+
+    [Header("공중공격 평타 설정")]
+    public int currentAirActionCount = 0;   // 현재 공중 공격 횟수
+    public int maxAirActions = 2;           // 최대 허용 횟수
+    public float airAttackBounceForce = 2f; // 허공답보 (위로 살짝 뜨는 힘)
+
+    [Header("공중 찍기공격")]
+    public float diveDropSpeed = 25f; // 밑으로 내리꽂는 속도 (엄청 빨라야 찰집니다!)
+    public string anim_DiveDrop = "AirHeavyDrop";
+    public string anim_DiveLand = "AirHeavyAtk";
+
+    // 상태 선언
+
+
+    // 공중 횟수 초기화 함수
+    public void ResetAirActions() => currentAirActionCount = 0;
+
+
+
     //스프린트 점프 쿨타임 리셋함수
     public void ResetSprintJumpCooldown()
     {
@@ -154,6 +173,12 @@ public class PlayerController : MonoBehaviour
 
     public PlayerThrustReadyState ThrustReadyState { get; private set; }
     public PlayerThrustAttackState ThrustAttackState { get; private set; }
+    public PlayerAirAttack1State AirAttack1State { get; private set; }
+    public PlayerAirAttack2State AirAttack2State { get; private set; }
+
+    public PlayerDiveDropState DiveDropState { get; private set; }
+    public PlayerDiveLandState DiveLandState { get; private set; }
+
 
     //public PlayerAttack1State AttackState { get; private set; }
 
@@ -186,6 +211,12 @@ public class PlayerController : MonoBehaviour
 
         ThrustReadyState = new PlayerThrustReadyState(this, StateMachine, "MiddleToCharge");
         ThrustAttackState = new PlayerThrustAttackState(this, StateMachine, "MiddleChargeATK");
+
+        AirAttack1State = new PlayerAirAttack1State(this, StateMachine, "AirAtk1");
+        AirAttack2State = new PlayerAirAttack2State(this, StateMachine, "AirAtk2");
+
+        DiveDropState = new PlayerDiveDropState(this, StateMachine, anim_DiveDrop);
+        DiveLandState = new PlayerDiveLandState(this, StateMachine, anim_DiveLand);
 
         if (rb == null) rb = GetComponent<Rigidbody>(); //리지드바디 할당
         if (cd == null) cd = GetComponent<BoxCollider>(); // 콜라이더 할당
@@ -222,9 +253,16 @@ public class PlayerController : MonoBehaviour
             RestJumpCount();
         }
 
+        if (IsGrounded() && rb.linearVelocity.y <= 0.1f)
+        {
+            RestJumpCount();
+            ResetAirActions(); // 바닥에 닿으면 공중 공격 횟수 초기화
+        }
+
         //딱 idle, move에서만 가능
         HandleThrustAttackInput(); //강공찌르기 판독기 추가
         HandleHeavyAttackInput(); //스킬찌르기 판독기 추가
+       
 
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
@@ -289,10 +327,17 @@ public class PlayerController : MonoBehaviour
         {
             StateMachine.ChangeState(Attack1State);
         }
+        //공중 1타 분배
+        else if (!IsGrounded() && currentAirActionCount < maxAirActions
+            && !(StateMachine.CurrentState is PlayerAirAttack1State)
+            && !(StateMachine.CurrentState is PlayerAirAttack2State))
+        {
+            StateMachine.ChangeState(AirAttack1State);
+        }
 
     }
 
-    //스킬공격 분배기 함수
+    //스킬공격 분배기 함수 // 헤비어택(스킬) 할당키 "E"
     public void HandleHeavyAttackInput()
     {
         // 1.
@@ -320,12 +365,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //강공 찌르기
+   
+
+    //강공 찌르기 //키 F
     public void HandleThrustAttackInput()
     {
         // 1. 찌르기 키(예: 중간 공격키)가 눌려있는지 확인
         // (InputReader에서 키를 꾹 누르고 있는 동안 ThrustPressed가 true라고 가정)
         if (!inputReader.ThrustAttackPressed) return;
+
+        //방어코드.. 내려찍기중에는 지상 찌르기 리턴시키기
+        if (StateMachine.CurrentState == DiveDropState || StateMachine.CurrentState == DiveLandState)
+        {
+            inputReader.ThrustAttackPressed = false; // 예약된 입력 삭제
+            return;
+        }
 
         // 2. [입구 컷] 스프린트 중에는 멈춰서 찌르기 준비를 하면 조작감이 깨지므로 무시!
         if (isSprinting)
@@ -340,6 +394,11 @@ public class PlayerController : MonoBehaviour
         {
             // 찌르기 준비(기 모으기) 상태로 보냄
             StateMachine.ChangeState(ThrustReadyState);
+        }
+        else if (!IsGrounded() && StateMachine.CurrentState != DiveDropState && StateMachine.CurrentState != DiveLandState)
+        {
+            // 허공에 있다면 바로 떨어지기 상태로 돌입!
+            StateMachine.ChangeState(DiveDropState);
         }
     }
 }

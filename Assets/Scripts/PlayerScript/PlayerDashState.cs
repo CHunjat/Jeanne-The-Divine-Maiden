@@ -13,6 +13,12 @@ public class PlayerDashState : PlayerState
     {
         base.Enter();
 
+        ////공중공격 대쉬후 공중공격회수 초기화시킬려면 주석없애셈ㅋㅋ
+        //if (!player.IsGrounded())
+        //{
+        //    player.ResetAirActions();
+        //}
+
         player.rb.useGravity = false;
         dashTime = player.dashDuration;
         float xInput = player.inputReader.MoveValue.x;
