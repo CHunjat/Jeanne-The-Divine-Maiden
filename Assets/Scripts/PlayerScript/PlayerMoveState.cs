@@ -123,6 +123,28 @@ public class PlayerMoveState : PlayerState
         }
 
         float currentSpeed = player.isSprinting ? player.sprintSpeed : player.moveSpeed;
-        player.SetVelocity(xInput * currentSpeed, player.rb.linearVelocity.y);
+        // 비탈길 오르내리기 보정 로직
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 덜덜거림 방지
+
+            // xInput을 경사면 방향으로 변환
+            Vector3 moveDir = new Vector3(xInput, 0f, 0f);
+            Vector3 slopeMoveDir = player.GetSlopeMoveDirection(moveDir);
+
+            player.SetVelocity(slopeMoveDir.x * currentSpeed, slopeMoveDir.y * currentSpeed);
+        }
+        else
+        {
+            // 평지 걷기
+            player.rb.useGravity = true;
+            player.SetVelocity(xInput * currentSpeed, player.rb.linearVelocity.y);
+        }
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true;
     }
 }

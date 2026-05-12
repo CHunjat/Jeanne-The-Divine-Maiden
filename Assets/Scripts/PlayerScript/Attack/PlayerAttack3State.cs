@@ -32,6 +32,11 @@ public class PlayerAttack3State : PlayerAttackState
         base.PhysicsUpdate();
 
         // [핵심] 초반 0.15초 동안만 바라보는 방향으로 스텝을 밟습니다.
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
         if (stateTimer < 0.15f)
         {
             float facingDir = player.isFacingRight ? 1f : -1f;
@@ -42,4 +47,11 @@ public class PlayerAttack3State : PlayerAttackState
             player.SetVelocity(0f, player.rb.linearVelocity.y);
         }
     }
+
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
+    }
+
 }

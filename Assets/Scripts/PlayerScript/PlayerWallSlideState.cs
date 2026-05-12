@@ -26,7 +26,7 @@ public class PlayerWallSlideState : PlayerState
         // wallDir이 1(오른쪽)이면 FlipController(-1) -> 왼쪽 보기
         player.FlipController(-wallDir);
 
-        // ★ [추가] 만약 FlipController가 제대로 안 먹는다면 강제로 rotation을 조절하세요.
+        // ★ [추가] 만약 FlipController가 제대로 안 먹는다면 강제로 rotation을 조절
         // float targetY = (wallDir == -1f) ? 0f : 180f; // 왼쪽 벽이면 오른쪽(0도), 오른쪽 벽이면 왼쪽(180도)
         // player.transform.rotation = Quaternion.Euler(0, targetY, 0);
 
@@ -85,8 +85,6 @@ public class PlayerWallSlideState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-
-        // ★ [해결 완료] 벽 밀착의 마법 ★
         // X축 속도를 0으로 멈추지 말고, 벽 방향(wallDir)으로 속도를 계속 줍니다! (예: 2f)
         // ZeroFriction 머티리얼 덕분에 끈적이지 않고, 벽에 빈틈없이 100% 딱 붙어서 긁고 내려옵니다.
         player.SetVelocity(wallDir * 2f, -player.wallSlideSpeed);

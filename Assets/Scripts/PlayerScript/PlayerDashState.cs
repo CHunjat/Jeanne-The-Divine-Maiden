@@ -13,6 +13,12 @@ public class PlayerDashState : PlayerState
     {
         base.Enter();
 
+        ////공중공격 대쉬후 공중공격회수 초기화시킬려면 주석없애셈ㅋㅋ
+        //if (!player.IsGrounded())
+        //{
+        //    player.ResetAirActions();
+        //}
+
         player.rb.useGravity = false;
         dashTime = player.dashDuration;
         float xInput = player.inputReader.MoveValue.x;
@@ -47,8 +53,16 @@ public class PlayerDashState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-        // 중력 무시하고 수평 대쉬 (y값을 0으로 주면 공중 대쉬 가능)
-        player.SetVelocity(dashDirection * player.dashSpeed, 0f);
+        Vector3 dashVec = new Vector3(dashDirection, 0f, 0f);
+
+        // 비탈길이라면? 대쉬 방향을 경사면에 맞춰 대각선으로 꺾어버림!
+        if (player.OnSlope())
+        {
+            dashVec = player.GetSlopeMoveDirection(dashVec);
+        }
+
+        // 중력 무시하고 수평/대각선 대쉬 (공중 대쉬도 자연스럽게 처리됨)
+        player.SetVelocity(dashVec.x * player.dashSpeed, dashVec.y * player.dashSpeed);
     }
 
     public override void LogicUpdate()

@@ -24,8 +24,25 @@ public class PlayerHeavyAttackState : PlayerAttackState
     {
         base.PhysicsUpdate();
 
+
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
+
+
         // 제자리에서 안정적으로 때리도록 X축 속도를 0으로 꽉 잡아줍니다.
         player.SetVelocity(0f, player.rb.linearVelocity.y);
+
+
+
+
     }
 
     public override void LogicUpdate()
@@ -42,5 +59,10 @@ public class PlayerHeavyAttackState : PlayerAttackState
         // ※ 부모 클래스인 PlayerAttackState.cs의 LogicUpdate에 
         // if (GetNormalizedTime() >= 1.0f) stateMachine.ChangeState(player.IdleState); 
         // 이 코드가 이미 들어있기 때문에, 애니메이션이 끝나면 알아서 깔끔하게 Idle로 전환
+    }
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
     }
 }

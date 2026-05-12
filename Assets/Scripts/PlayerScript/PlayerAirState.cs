@@ -28,15 +28,25 @@ public class PlayerAirState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-
+        player.HandleAttackInput(); //떨어질때도 공중공격 가능
 
 
         // : BoxCollider 기반 착지 판정
         // 위로 솟구치는 중이 아니고(y <= 0.1f), 컨트롤러의 IsGrounded가 true일 때
-        if (player.rb.linearVelocity.y <= 0.1f && player.IsGrounded())
+        if (player.IsGrounded())
         {
-            stateMachine.ChangeState(player.LandState);
-            return;
+            if (player.rb.linearVelocity.y <= 0.1f || player.IsGrounded())
+            {
+
+                if (player.OnSlope())
+                {
+                    player.rb.useGravity = false; // 중력 즉시 차단
+                    player.SetVelocity(0f, 0f);   // 미끄러짐 즉시 방지
+                }
+
+                stateMachine.ChangeState(player.LandState);
+                return;
+            } 
         }
 
         if (player.inputReader.JumpPressed && player.CanJump)
@@ -96,6 +106,33 @@ public class PlayerAirState : PlayerState
         // 공중 제어 (Air Control)
         float xInput = player.inputReader.MoveValue.x;
         float currentX = player.rb.linearVelocity.x;
+        float targetSpeed = player.isSprinting ? player.sprintSpeed : player.moveSpeed;
+
+        //내리막길 추적로직
+        if (player.OnSlope() && player.rb.linearVelocity.y < 0.5f)
+        {
+            // 공중에서 비탈길이 감지되었다는 건 땅에 거의 닿았다는 뜻입니다.
+            if (xInput != 0)
+            {
+                Vector3 moveVec = new Vector3(xInput, 0f, 0f);
+                Vector3 slopeVec = player.GetSlopeMoveDirection(moveVec);
+
+                // 내리막길일 때만 아래로 살짝 눌러주어 붕 뜨는 것을 방지합니다.
+                if (slopeVec.y < 0)
+                {
+                    player.rb.AddForce(Vector3.down * 40f, ForceMode.Force);
+                }
+            }
+        }
+        //if (player.OnSlope())
+        //{
+        //    Vector3 moveVec = new Vector3(xInput, 0f, 0f);
+        //    Vector3 slopeVec = player.GetSlopeMoveDirection(moveVec);
+        //    // 내리막(slopeVec.y < 0)으로 이동 중일 때 바닥으로 붙여줌
+        //    float downwardForce = slopeVec.y < 0 ? 1.2f : 1.0f;
+
+        //    player.SetVelocity(slopeVec.x * targetSpeed, (slopeVec.y * targetSpeed * downwardForce) + player.rb.linearVelocity.y);
+        //}
 
         if (xInput != 0 && Mathf.Sign(xInput) != Mathf.Sign(currentX))
         {

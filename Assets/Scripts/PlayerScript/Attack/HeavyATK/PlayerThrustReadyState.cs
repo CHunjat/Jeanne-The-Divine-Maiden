@@ -35,4 +35,27 @@ public class PlayerThrustReadyState : PlayerState
             stateMachine.ChangeState(player.AirState);
         }
     }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+
+        // 🔥 공격 중에는 비탈길에서 본드처럼 딱 붙어있어야 함
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
+    }
 }

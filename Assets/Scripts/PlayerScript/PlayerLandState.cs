@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-
+using UnityEngine; 
 public class PlayerLandState : PlayerState
 {
     public PlayerLandState(PlayerController player, PlayerStateMachine stateMachine, string animName)
@@ -9,18 +9,34 @@ public class PlayerLandState : PlayerState
     {
         //base.Enter();
         stateTimer = 0f;
-        player.SetVelocity(0f, player.rb.linearVelocity.y);
 
         player.ResetLandTimer();
         if (player.isSprinting)
         {
             float dir = player.isFacingRight ? 1f : -1f;
-            player.SetVelocity(dir * player.sprintSpeed, 0f); //착지 구르기 속도조절
-            player.animator.Play(player.anim_SprintLand, 0,0); // 스프린트 착지+ 리셋
+            Vector3 moveDir = new Vector3(dir, 0f, 0f);
+
+            // 🔥 착지 시점에 비탈길이라면 경사면 방향으로 속도를 꺾어줍니다.
+            if (player.OnSlope())
+            {
+                player.rb.linearVelocity = Vector3.zero;
+
+                Vector3 slopeDir = player.GetSlopeMoveDirection(moveDir);
+                player.SetVelocity(slopeDir.x * player.sprintSpeed, slopeDir.y * player.sprintSpeed);
+
+                player.rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+            }
+            else
+            {
+                player.SetVelocity(dir * player.sprintSpeed, 0f);
+            }
+
+            player.animator.Play(player.anim_SprintLand, 0, 0);
         }
         else
         {
-            player.animator.CrossFade(animHash, 0.1f); // 일반 점프 모션
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+            player.animator.CrossFade(animHash, 0.1f);
         }
     }
 
