@@ -15,7 +15,7 @@ public class PlayerDiveLandState : PlayerState
         // 1. 땅에 닿았으니 속도를 완벽하게 0으로 꽉 잡아줍니다. (미끄러짐 방지)
         player.SetVelocity(0f, 0f);
 
-        // 💡 여기에 나중에 [카메라 쉐이크 함수]나 [바닥 먼지 이펙트 생성] 코드를 넣으면 기가 막힙니다!
+        // 여기에 나중에 [카메라 쉐이크 함수]나 [바닥 먼지 이펙트 생성] 코드넣기
     }
 
     public override void LogicUpdate()
@@ -31,5 +31,32 @@ public class PlayerDiveLandState : PlayerState
             isExitingState = true;
             stateMachine.ChangeState(player.IdleState);
         }
+    }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+
+
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
+
+
+        // 제자리에서 안정적으로 때리도록 X축 속도를 0으로 꽉 잡아줍니다.
+        player.SetVelocity(0f, player.rb.linearVelocity.y);
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 중력 복구
     }
 }

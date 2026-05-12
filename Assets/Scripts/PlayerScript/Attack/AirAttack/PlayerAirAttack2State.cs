@@ -38,7 +38,16 @@ public class PlayerAirAttack2State : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
         //공중 브레이크: '스르륵'을 '통!'으로 바꿔주는 마법
         float currentX = player.rb.linearVelocity.x;
         float currentY = player.rb.linearVelocity.y;
@@ -56,4 +65,5 @@ public class PlayerAirAttack2State : PlayerState
         base.Exit();
         player.rb.useGravity = true;
     }
+
 }

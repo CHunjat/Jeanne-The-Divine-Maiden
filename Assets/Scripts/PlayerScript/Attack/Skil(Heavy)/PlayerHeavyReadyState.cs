@@ -19,6 +19,16 @@ public class PlayerHeavyReadyState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
         player.SetVelocity(0f, player.rb.linearVelocity.y);
     }
 
@@ -39,5 +49,10 @@ public class PlayerHeavyReadyState : PlayerState
         {
             stateMachine.ChangeState(player.HeavyChargeState);
         }
+    }
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
     }
 }

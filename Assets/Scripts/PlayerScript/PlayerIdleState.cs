@@ -11,6 +11,12 @@ public class PlayerIdleState : PlayerState
         stateTimer = 0f;
         player.isSprinting = false;
         player.SetVelocity(0f, player.rb.linearVelocity.y);
+
+        if (player.OnSlope()) player.SetVelocity(0f, 0f);
+
+        else player.SetVelocity(0f, player.rb.linearVelocity.y);
+
+
         if (player.wasSprinting)
         {
             player.animator.Play(player.anim_SprintBreak);
@@ -61,6 +67,24 @@ public class PlayerIdleState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-        player.SetVelocity(0f, player.rb.linearVelocity.y);
+
+        // 🔥 비탈길 미끄러짐 방지 로직
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 차단
+            player.SetVelocity(0f, 0f);   // 완전 정지
+        }
+        else
+        {
+            player.rb.useGravity = true;
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
+    }
+
+    // 🔥 나갈 때 중력 원복!
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true;
     }
 }

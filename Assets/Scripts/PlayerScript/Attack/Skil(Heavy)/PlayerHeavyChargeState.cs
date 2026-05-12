@@ -25,6 +25,16 @@ public class PlayerHeavyChargeState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
+        else
+        {
+            // 평지라면 기존 중력/마찰력 로직 유지
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
         player.SetVelocity(0f, player.rb.linearVelocity.y);
     }
 
@@ -62,5 +72,10 @@ public class PlayerHeavyChargeState : PlayerState
             Debug.Log("풀차지 완료! 번쩍!");
             // 여기서 시각적 이펙트(반짝임)를 넣어주면 아주 좋습니다.
         }
+    }
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
     }
 }

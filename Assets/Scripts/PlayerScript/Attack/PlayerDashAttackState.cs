@@ -37,11 +37,19 @@ public class PlayerDashAttackState : PlayerAttackState
 
         // [핵심] 대시 어택 상태를 빠져나가는 그 즉시, X축 관성 없앰
         player.SetVelocity(0f, player.rb.linearVelocity.y);
+        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
+
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false; // 중력 끄기
+            player.SetVelocity(0f, 0f);   // 속도 완전 고정 (이동 공격이 아닐 경우)
+        }
 
         // 방향 체크
         float facingDir = player.isFacingRight ? 1f : -1f;
@@ -80,4 +88,6 @@ public class PlayerDashAttackState : PlayerAttackState
 
         // 100% 끝나면 Idle로 돌아가는 건 부모(PlayerAttackState)의 LogicUpdate가 처리함
     }
+
+    
 }

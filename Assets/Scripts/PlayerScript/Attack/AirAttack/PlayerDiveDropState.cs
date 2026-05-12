@@ -21,11 +21,27 @@ public class PlayerDiveDropState : PlayerState
     {
         base.LogicUpdate();
 
-        // 🔥 바닥에 닿는 순간, 착지 타격 모션으로 상태 변경!
+        // 바닥에 닿는 순간, 착지 타격 모션으로 
         if (player.IsGrounded())
         {
             stateMachine.ChangeState(player.DiveLandState);
         }
+    }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+
+
+      
+
+
+        // 제자리에서 안정적으로 때리도록 X축 속도를 0으로 꽉 잡아줍니다.
+        player.SetVelocity(0f, player.rb.linearVelocity.y);
+
+
+
+
     }
 
     public override void Exit()
