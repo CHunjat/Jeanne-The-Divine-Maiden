@@ -472,7 +472,10 @@ public class PlayerController : MonoBehaviour
         // --- [A] 지상/비탈길 (찌르기) ---
         if (isActuallyOnGround)
         {
-            if (isSprinting) { inputReader.ThrustAttackPressed = false; return; }
+            //if (isSprinting) 
+            //{
+            //    inputReader.ThrustAttackPressed = false; return;
+            //}
 
             if (!(StateMachine.CurrentState is PlayerAttackState) &&
                 StateMachine.CurrentState != ThrustReadyState &&
