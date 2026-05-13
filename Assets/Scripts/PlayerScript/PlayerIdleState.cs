@@ -12,9 +12,15 @@ public class PlayerIdleState : PlayerState
         player.isSprinting = false;
         player.SetVelocity(0f, player.rb.linearVelocity.y);
 
-        if (player.OnSlope()) player.SetVelocity(0f, 0f);
-
-        else player.SetVelocity(0f, player.rb.linearVelocity.y);
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false;
+            player.SetVelocity(0f, 0f); // 하강 관성까지 여기서 사살
+        }
+        else
+        {
+            player.SetVelocity(0f, player.rb.linearVelocity.y);
+        }
 
 
         if (player.wasSprinting)
@@ -77,7 +83,6 @@ public class PlayerIdleState : PlayerState
         else
         {
             player.rb.useGravity = true;
-            player.SetVelocity(0f, player.rb.linearVelocity.y);
         }
     }
 

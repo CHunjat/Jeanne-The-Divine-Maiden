@@ -30,6 +30,8 @@ public class PlayerAttack3State : PlayerAttackState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        float facingDir = player.isFacingRight ? 1f : -1f;
+
 
         // [핵심] 초반 0.15초 동안만 바라보는 방향으로 스텝을 밟습니다.
         if (player.OnSlope())
@@ -39,8 +41,14 @@ public class PlayerAttack3State : PlayerAttackState
         }
         if (stateTimer < 0.15f)
         {
-            float facingDir = player.isFacingRight ? 1f : -1f;
-            player.SetVelocity(facingDir * stepSpeed, player.rb.linearVelocity.y);
+
+            Vector3 moveVec = new Vector3(facingDir, 0f, 0f);
+            Vector3 slopeVec = player.GetSlopeMoveDirection(moveVec);
+
+
+            float downwardStickiness = slopeVec.y < 0 ? 2.0f : 1.0f;
+
+            player.SetVelocity(slopeVec.x * stepSpeed,(slopeVec.y * stepSpeed * downwardStickiness) - (slopeVec.y < 0 ? 2f : 0f));
         }
         else // 전진 스텝이 끝나면 그 자리에 딱 멈춰서 묵직하게 후딜레이 모션 재생
         {
