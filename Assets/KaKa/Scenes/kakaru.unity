@@ -2941,6 +2941,16 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   thrustDuration: 0.5
+  currentAirActionCount: 0
+  maxAirActions: 2
+  airAttackBounceForce: 2
+  diveDropSpeed: 25
+  anim_DiveDrop: AirHeavyDrop
+  anim_DiveLand: AirHeavyAtk
+  anim_AirUpAtk: AirUpAtk
+  anim_AirDownAtk: AirDownAtk
+  hasUsedAirUp: 0
+  maxSlopeAngle: 45
 --- !u!95 &582969476
 Animator:
   serializedVersion: 7
@@ -3031,7 +3041,7 @@ Transform:
   m_GameObject: {fileID: 582969472}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -329, y: 73, z: 0}
+  m_LocalPosition: {x: -63.7, y: 47.7, z: 0}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
