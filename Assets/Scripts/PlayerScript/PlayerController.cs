@@ -125,10 +125,10 @@ public class PlayerController : MonoBehaviour
     {
         if (cd == null) return false;
 
-        // 🔥 얇은 선(Raycast) 대신 상자(BoxCast)를 아래로 쏴서 발끝부터 발뒤꿈치까지 넓게 체크합니다.
+        //얇은 선(Raycast) 대신 상자(BoxCast)를 아래로 쏴서 발끝부터 발뒤꿈치까지 넓게 체크합니다.
         Vector3 center = cd.bounds.center;
         Vector3 halfExtents = new Vector3(cd.bounds.extents.x * 0.9f, 0.1f, cd.bounds.extents.z * 0.9f); // 캐릭터 너비에 맞춤
-        float maxDistance = cd.bounds.extents.y + 0.3f; // 발 아래로 쏘는 길이
+        float maxDistance = cd.bounds.extents.y + 0.03f; // 발 아래로 쏘는 길이 // 0.3 -> 0.03 바꾸니까 시발존나잘되잖아 ㅡㅡ 왤케 길게잡았찌
 
         // BoxCast로 바닥 충돌 정보 가져오기
         if (Physics.BoxCast(center, halfExtents, Vector3.down, out slopeHit, transform.rotation, maxDistance, groundLayer))
@@ -453,52 +453,59 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   
+
 
     //강공 찌르기 //키 F
     public void HandleThrustAttackInput()
     {
-        // 1. 찌르기 키(예: 중간 공격키)가 눌려있는지 확인
-        // (InputReader에서 키를 꾹 누르고 있는 동안 ThrustPressed가 true라고 가정)
         if (!inputReader.ThrustAttackPressed) return;
 
-        //방어코드.. 내려찍기중에는 지상 찌르기 리턴시키기
+        // 1. 이미 내려찍기 중이면 중복 방지
         if (StateMachine.CurrentState == DiveDropState || StateMachine.CurrentState == DiveLandState)
-        {
-            inputReader.ThrustAttackPressed = false; // 예약된 입력 삭제
-            return;
-        }
-
-        // 2.스프린트 중에는 멈춰서 찌르기 금지
-        if (isSprinting)
         {
             inputReader.ThrustAttackPressed = false;
             return;
         }
 
-        // 3. 땅에 있고, 이미 공격 중이거나 차지 중이 아닐 때만 진입
-        if (IsGrounded() &&!(StateMachine.CurrentState is PlayerAttackState)
-            && StateMachine.CurrentState != ThrustReadyState && StateMachine.CurrentState != ThrustAttackState)
+        bool isActuallyOnGround = IsGrounded() || OnSlope();
+
+        // --- [A] 지상/비탈길 (찌르기) ---
+        if (isActuallyOnGround)
         {
-            // 찌르기 준비(기 모으기) 상태로 보냄
-            StateMachine.ChangeState(ThrustReadyState);
-        }
-        else if (!IsGrounded() && StateMachine.CurrentState != DiveDropState && StateMachine.CurrentState != DiveLandState)
-        {
-            if (StateMachine.CurrentState is PlayerAirAttack1State || StateMachine.CurrentState is PlayerAirUpAttackState)
+            if (isSprinting) { inputReader.ThrustAttackPressed = false; return; }
+
+            if (!(StateMachine.CurrentState is PlayerAttackState) &&
+                StateMachine.CurrentState != ThrustReadyState &&
+                StateMachine.CurrentState != ThrustAttackState)
             {
-                // 현재 재생 중인 공중 공격 애니메이션의 진행도(0.0 ~ 1.0)
+                if (OnSlope()) SetVelocity(0f, 0f);
+                inputReader.ThrustAttackPressed = false;
+                StateMachine.ChangeState(ThrustReadyState);
+            }
+        }
+        // --- [B] 공중 (하강 공격) ---
+        else
+        {
+            // 🚨 어제 맞췄던 '공격 진행도' 로직 부활
+            // 현재 공중 공격 중이라면 애니메이션이 어느 정도 진행되었는지 확인
+            if (StateMachine.CurrentState is PlayerAirAttack1State ||
+                StateMachine.CurrentState is PlayerAirAttack2State ||
+                StateMachine.CurrentState is PlayerAirUpAttackState)
+            {
+                // 🔥 normalizedTime이 0.4f~0.5f 정도는 지나야 하강 공격으로 캔슬 가능
+                // 이 수치보다 작을 때 누르면 "두 번 눌러야 한다"고 느끼게 됩니다.
                 float nTime = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
 
-                // 칼을 휘두르는 구간(예: 0.5f 이전)에서는 내려찍기 입력을 아예 씹어버립니다!
-                if (nTime < 0.5f)
+                if (nTime < 0.4f)
                 {
-                    inputReader.ThrustAttackPressed = false; // 입력 취소
-                    return; // 함수 탈출 (내려찍기 발동 안 됨)
+                    // 아직 애니메이션 초반이면 입력을 소모하지 않고 리턴 (예약 대기 느낌)
+                    // 하지만 유저가 답답할 수 있으니 여기서는 소모하지 않고 '보류'합니다.
+                    return;
                 }
-                // nTime이 0.5f 이상이면(칼을 다 휘두르고 거둬들이는 구간) 아래 코드로 넘어가서 캔슬 강하!
             }
-            // 허공에 있다면 바로 떨어지기 상태로 돌입!
+
+            // 공중 일반 상태거나, 위 조건을 통과한 공격 후반부라면 즉시 발동
+            inputReader.ThrustAttackPressed = false;
             StateMachine.ChangeState(DiveDropState);
         }
     }

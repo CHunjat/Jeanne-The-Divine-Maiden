@@ -4,7 +4,7 @@ public class PlayerDashState : PlayerState
 {
     private float dashTime;
     private float dashDirection;
-  
+    private bool startedGrounded; // 🔥 대쉬 시작 시점의 접지 상태 저장
 
     public PlayerDashState(PlayerController player, PlayerStateMachine stateMachine, string animName)
         : base(player, stateMachine, animName) { }
@@ -13,111 +13,78 @@ public class PlayerDashState : PlayerState
     {
         base.Enter();
 
-        ////공중공격 대쉬후 공중공격회수 초기화시킬려면 주석없애셈ㅋㅋ
-        //if (!player.IsGrounded())
-        //{
-        //    player.ResetAirActions();
-        //}
+        // 🔥 대쉬 시작할 때 땅이었는지 기록 (공중 대쉬는 경사면 보정을 받지 않게 하기 위함)
+        startedGrounded = player.IsGrounded() || player.OnSlope();
 
         player.rb.useGravity = false;
         dashTime = player.dashDuration;
+
         float xInput = player.inputReader.MoveValue.x;
         dashDirection = xInput != 0 ? Mathf.Sign(xInput) : (player.isFacingRight ? 1f : -1f);
 
         if (player.IsTouchingWall(dashDirection))
         {
-            // 대쉬를 아예 시작하지 않고 return;
+            stateMachine.ChangeState(player.IdleState); // 즉시 종료
             return;
         }
-        // 대쉬 시작 시점의 방향 결정
-        if (xInput != 0)
-        {
-            dashDirection = Mathf.Sign(xInput);
-            player.FlipController(xInput);
-        }
-        else
-        {
-            dashDirection = player.isFacingRight ? 1f : -1f;
-            player.FlipController(dashDirection);
-        }
-    }
 
-    public override void Exit()
-    {
-        base.Exit();
-        player.rb.useGravity = true;
-        player.SetVelocity(0f, player.rb.linearVelocity.y); //비비기 대시 방어코드 끝나면 속도 0으로 맞추기
-
+        player.FlipController(dashDirection);
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+
+        // 기본 대쉬 방향 (수평)
         Vector3 dashVec = new Vector3(dashDirection, 0f, 0f);
 
-        // 비탈길이라면? 대쉬 방향을 경사면에 맞춰 대각선으로 꺾어버림!
-        if (player.OnSlope())
+        // 🔥 버그 수정 핵심 로직
+        // 1. 지상에서 대쉬를 시작했고 2. 현재 비탈길 위라면 경사면 보정 적용
+        // 공중에서 대쉬하다가 비탈길에 닿은 경우는 보정을 하지 않아야 위로 튀지 않습니다.
+        if (startedGrounded && player.OnSlope())
         {
             dashVec = player.GetSlopeMoveDirection(dashVec);
         }
 
-        // 중력 무시하고 수평/대각선 대쉬 (공중 대쉬도 자연스럽게 처리됨)
+        // 공중 대쉬 상태에서 비탈길에 충돌하면 자연스럽게 멈추거나 슬라이딩하도록
+        // 수직 속도(y)에 중력을 끄고 대쉬 속도만 주입
         player.SetVelocity(dashVec.x * player.dashSpeed, dashVec.y * player.dashSpeed);
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        player.HandleAttackInput(); //대쉬 어택과 스프린트 어택을 나누기위해 대쉬중 어택받기만 추가!!
+        player.HandleAttackInput();
         dashTime -= Time.deltaTime;
 
-        //예외처리로직  및 대쉬후 체인지 스테이트로 변경
+        // 벽에 닿았을 때 예외 처리
         if (player.IsTouchingWall(dashDirection))
         {
-            player.ResetDashCooldown();
-            if(!player.IsGrounded())
-            {
-                stateMachine.ChangeState(player.WallSlideState);
-            }
-            else
-            {
-                if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
-                    stateMachine.ChangeState(player.MoveState);
-                else
-                    stateMachine.ChangeState(player.IdleState);
-            }
+            FinishDash();
             return;
-            
         }
 
-        if (player.inputReader.JumpPressed)
+        if (player.inputReader.JumpPressed && player.IsGrounded())
         {
-            if (player.IsGrounded())
-            {
-                player.inputReader.JumpPressed = false;
-                player.ResetDashCooldown();
-                float dir = player.isFacingRight ? 1f : -1f;
-                player.SetDashJumpVelocity(dir); // 대쉬 관성 주입 점프
-
-                stateMachine.ChangeState(player.JumpState);
-                return;
-            }
-            else
-            {
-                // 공중 대쉬 중이면 점프 입력 그냥 씹기 (선입력 방지)
-                player.inputReader.JumpPressed = false;
-            } 
+            player.inputReader.JumpPressed = false;
+            player.ResetDashCooldown();
+            player.SetDashJumpVelocity(player.isFacingRight ? 1f : -1f);
+            stateMachine.ChangeState(player.JumpState);
+            return;
         }
 
-        if (dashTime > 0) return;
+        if (dashTime <= 0)
+        {
+            FinishDash();
+        }
+    }
 
-
-
-
+    // 🔥 대쉬 종료 로직 공통화
+    private void FinishDash()
+    {
         player.ResetDashCooldown();
 
-        //대쉬후 스프린트연결
-        if (player.IsGrounded())
+        if (player.IsGrounded() || player.OnSlope())
         {
             if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
             {
@@ -133,36 +100,15 @@ public class PlayerDashState : PlayerState
         else
         {
             player.isSprinting = false;
+            // 공중 종료 시 x축 관성 제거 (원하면 유지 가능)
             player.SetVelocity(0f, player.rb.linearVelocity.y);
             stateMachine.ChangeState(player.AirState);
         }
+    }
 
-        #region 필요없는코드
-        //if (dashTime <= 0)
-        //{
-        //    player.ResetDashCooldown();
-        //    if (!player.IsGrounded())
-        //    {
-        //        player.isSprinting = false;
-        //        player.SetVelocity(0f, player.rb.linearVelocity.y); //대쉬점프 관성없애기 있게하고싶으면 지우삼
-
-        //        stateMachine.ChangeState(player.AirState);
-        //    }
-        //    // 2. 바닥에 붙어 있다면 Idle로
-        //    else
-        //    {
-        //        if (Mathf.Abs(player.inputReader.MoveValue.x) > 0.1f)
-        //        {
-        //            player.isSprinting = true;
-        //            stateMachine.ChangeState(player.MoveState); // 이동 상태로 가되 속도는 전력질주 적용
-        //        }
-        //        else
-        //        {
-        //            player.isSprinting = false;
-        //            stateMachine.ChangeState(player.IdleState);
-        //        }
-        //    }
-        //}
-        #endregion
+    public override void Exit()
+    {
+        base.Exit();
+        player.rb.useGravity = true;
     }
 }

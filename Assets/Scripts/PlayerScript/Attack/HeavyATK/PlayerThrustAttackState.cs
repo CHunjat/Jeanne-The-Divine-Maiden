@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
-public class PlayerThrustAttackState : PlayerState
+public class PlayerThrustAttackState : PlayerAttackState
 {
-    private new float stateTimer; // 상태 전용 타이머
+    // 🔥 3타의 stepSpeed(4f)를 참고하여 찌르기 맛에 맞게 상수화
+    private float thrustSpeed = 6f;
+    // 🔥 너무 멀리 가는 걸 방지하기 위해 전진 시간을 3타(0.15f)와 비슷하게 조절
+    private float activeThrustTime = 0.2f;
 
     public PlayerThrustAttackState(PlayerController player, PlayerStateMachine stateMachine, string animName)
         : base(player, stateMachine, animName) { }
@@ -10,51 +13,18 @@ public class PlayerThrustAttackState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        stateTimer = 0f; // 진입 시 타이머 초기화
-
-        // 씹힘 방지용 강제 재생
         player.animator.Play(player.anim_ThrustAtk, 0, 0f);
 
+        // 3타와 동일: 진입 시 중력 끄고 정지 쐐기
         player.rb.useGravity = false;
-        player.SetVelocity(player.rb.linearVelocity.x, 0f);
+        player.SetVelocity(0f, 0f);
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-
-        stateTimer += Time.deltaTime; // 시간 누적
-
-        float dir = player.isFacingRight ? 1f : -1f;
-        // 그래프에서 현재 시간에 해당하는 'Y값(배율)'
-        // Evaluate 함수가 stateTimer를 인식해서 곡선 위의 값
-        float currentMultiplier = player.thrustVelocityCurve.Evaluate(stateTimer);
-        float thrustSpeed = player.moveSpeed * currentMultiplier;
-        // 물리 적용 (X축 방향 * 기본속도 * 그래프 배율)
-        if (player.OnSlope())
-        {
-            player.rb.useGravity = false; // 돌진 중 중력 차단
-            Vector3 moveDir = new Vector3(dir, 0f, 0f);
-            // 🔥 [핵심] 돌진 방향을 경사면에 평행하게 투영(Project)
-            Vector3 slopeDir = player.GetSlopeMoveDirection(moveDir);
-
-            // 경사면을 타고 돌진! (X, Y 속도가 모두 계산됨)
-            player.SetVelocity(slopeDir.x * thrustSpeed, slopeDir.y * thrustSpeed);
-
-            // 내리막 돌진 시 바닥에 더 밀착시키기 위해 하향 압력 살짝 추가
-            if (slopeDir.y < 0)
-            {
-                player.rb.AddForce(Vector3.down * 50f, ForceMode.Force);
-            }
-        }
-        else
-        {
-            player.rb.useGravity = true;
-            player.SetVelocity(dir * thrustSpeed, player.rb.linearVelocity.y);
-        }
-
-        //탈출 조건: 애니메이션 진행도가 아니라 설정한 '지속 시간'이 다 되면 탈출!
-        if (stateTimer >= player.thrustDuration)
+        // 애니메이션이 완전히 끝날 때까지 상태를 유지해야 PhysicsUpdate의 쐐기가 작동함
+        if (GetNormalizedTime() >= 1.0f)
         {
             stateMachine.ChangeState(player.IdleState);
         }
@@ -63,14 +33,52 @@ public class PlayerThrustAttackState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        float facingDir = player.isFacingRight ? 1f : -1f;
 
-        
+        // 🔥 [3타 핵심 로직 1] 독립적 비탈길 앵커
+        // PhysicsUpdate 시작 시 매 프레임 속도를 리셋하여 내리막 가속도를 삭제합니다.
+        if (player.OnSlope())
+        {
+            player.rb.useGravity = false;
+            player.SetVelocity(0f, 0f);
+        }
+
+        // 🔥 [3타 핵심 로직 2] 상수 기반 이동 구간
+        // 커브를 쓰지 않고 정해진 시간(activeThrustTime) 동안만 상수로 밀어줍니다.
+        if (stateTimer < activeThrustTime)
+        {
+            if (player.OnSlope())
+            {
+                Vector3 moveVec = new Vector3(facingDir, 0f, 0f);
+                Vector3 slopeVec = player.GetSlopeMoveDirection(moveVec);
+
+                // 3타에서 검증된 자석 수치 (2.0f, -2f)
+                float downwardStickiness = slopeVec.y < 0 ? 2.0f : 1.0f;
+                player.SetVelocity(
+                    slopeVec.x * thrustSpeed,
+                    (slopeVec.y * thrustSpeed * downwardStickiness) - (slopeVec.y < 0 ? 2f : 0f)
+                );
+            }
+            else
+            {
+                // 평지 상속 전진 (중력은 끄고 수평 속도만 깔끔하게 주입)
+                player.SetVelocity(facingDir * thrustSpeed, 0f);
+            }
+        }
+        else
+        {
+            // 🔥 [3타 핵심 로직 3] 전진 종료 후 0,0 쐐기
+            // 시간이 다 되면 애니메이션이 끝날 때까지 캐릭터를 땅에 박아버립니다.
+            if (player.OnSlope()) player.SetVelocity(0f, 0f);
+            else player.SetVelocity(0f, 0f); // 평지도 관성 없이 0,0 고정
+        }
     }
 
     public override void Exit()
     {
         base.Exit();
-        player.SetVelocity(0f, player.rb.linearVelocity.y); // 상태 나갈 때 속도 0
-        player.rb.useGravity = true; // 상태 나갈 때 중력 원복 필수!
+        // 상태 탈출 시 물리 엔진에 남아있을지 모를 모든 속도 제거
+        player.rb.linearVelocity = Vector3.zero;
+        player.rb.useGravity = true;
     }
 }
