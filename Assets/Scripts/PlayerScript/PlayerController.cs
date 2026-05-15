@@ -113,6 +113,17 @@ public class PlayerController : MonoBehaviour
 
     public bool hasUsedAirUp;   // 윗공격 1회 제한 스위치
 
+    [Header("방어")]
+    public string anim_GuardNormal = "BlockNormal";
+    public string anim_GuardOff = "Blockoff";
+    public string anim_BlockHit = "BlockNormalHit";
+    public string anim_BlockBreak = "BlockBreak";
+
+    [Header("패링")]
+
+
+
+
 
     // 상태 선언
 
@@ -244,7 +255,12 @@ public class PlayerController : MonoBehaviour
     public PlayerDiveLandState DiveLandState { get; private set; }
 
     public PlayerAirUpAttackState AirUpAttackState { get; private set; }
-   // public PlayerAirDownAttackState AirDownAttackState { get; private set; }
+
+    public PlayerGuardState GuardState { get; private set; }
+    public PlayerGuardOffState GuardOffState { get; private set; }
+
+
+    // public PlayerAirDownAttackState AirDownAttackState { get; private set; }
 
 
     //public PlayerAttack1State AttackState { get; private set; }
@@ -285,7 +301,11 @@ public class PlayerController : MonoBehaviour
         DiveDropState = new PlayerDiveDropState(this, StateMachine, anim_DiveDrop);
         DiveLandState = new PlayerDiveLandState(this, StateMachine, anim_DiveLand);
         AirUpAttackState = new PlayerAirUpAttackState(this, StateMachine, anim_AirUpAtk);
-       // AirDownAttackState = new PlayerAirDownAttackState(this, StateMachine, anim_AirDownAtk);
+        // AirDownAttackState = new PlayerAirDownAttackState(this, StateMachine, anim_AirDownAtk);
+
+        GuardState = new PlayerGuardState(this, StateMachine, anim_GuardNormal);
+        GuardOffState = new PlayerGuardOffState(this, StateMachine, anim_GuardOff);
+
 
         if (rb == null) rb = GetComponent<Rigidbody>(); //리지드바디 할당
         if (cd == null) cd = GetComponent<BoxCollider>(); // 콜라이더 할당
@@ -472,7 +492,10 @@ public class PlayerController : MonoBehaviour
         // --- [A] 지상/비탈길 (찌르기) ---
         if (isActuallyOnGround)
         {
-            if (isSprinting) { inputReader.ThrustAttackPressed = false; return; }
+            //if (isSprinting) 
+            //{
+            //    inputReader.ThrustAttackPressed = false; return;
+            //}
 
             if (!(StateMachine.CurrentState is PlayerAttackState) &&
                 StateMachine.CurrentState != ThrustReadyState &&
@@ -507,6 +530,21 @@ public class PlayerController : MonoBehaviour
             // 공중 일반 상태거나, 위 조건을 통과한 공격 후반부라면 즉시 발동
             inputReader.ThrustAttackPressed = false;
             StateMachine.ChangeState(DiveDropState);
+        }
+    }
+
+    public void HandleGuardInput()
+    {
+        // 방어 키(S)가 눌려있으면
+        if (inputReader.GuardHeld && IsGrounded())
+        {
+            // 대시 중이었다면 대시 관성을 지우고 방어
+            if (StateMachine.CurrentState == DashState)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+
+            StateMachine.ChangeState(GuardState);
         }
     }
 }

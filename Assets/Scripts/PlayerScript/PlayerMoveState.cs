@@ -28,6 +28,9 @@ public class PlayerMoveState : PlayerState
     public override void LogicUpdate()
     {
 
+        player.HandleGuardInput();
+        if (stateMachine.CurrentState == player.GuardState) return;
+
         if (!player.IsGrounded())
         { 
 

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerIdleState : PlayerState
@@ -36,6 +37,11 @@ public class PlayerIdleState : PlayerState
 
     public override void LogicUpdate()
     {
+
+        player.HandleGuardInput();
+        if (stateMachine.CurrentState == player.GuardState) return; 
+        
+        
         base.LogicUpdate();
         player.HandleAttackInput();
         float xInput = player.inputReader.MoveValue.x;

@@ -319,7 +319,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.560004, y: 6.663184, z: -10}
+  m_LocalPosition: {x: -37.850002, y: 2.603184, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -605,7 +605,7 @@ Transform:
   m_GameObject: {fileID: 942376641}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.560004, y: 6.663184, z: -10}
+  m_LocalPosition: {x: -37.850002, y: 2.603184, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1044,7 +1044,7 @@ Transform:
   m_GameObject: {fileID: 1199457208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.56, y: 4.36, z: 0}
+  m_LocalPosition: {x: -37.85, y: 0.3, z: 0}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1164,6 +1164,10 @@ MonoBehaviour:
   anim_AirUpAtk: AirUpAtk
   anim_AirDownAtk: AirDownAtk
   hasUsedAirUp: 0
+  anim_GuardNormal: BlockNormal
+  anim_GuardOff: Blockoff
+  anim_BlockHit: BlockNormalHit
+  anim_BlockBreak: BlockBreak
   maxSlopeAngle: 45
 --- !u!54 &1199457215
 Rigidbody:

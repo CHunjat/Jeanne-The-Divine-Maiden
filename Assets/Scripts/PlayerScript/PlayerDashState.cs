@@ -54,6 +54,11 @@ public class PlayerDashState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+
+        player.HandleGuardInput();
+        if (stateMachine.CurrentState == player.GuardState) return;
+
+
         player.HandleAttackInput();
         dashTime -= Time.deltaTime;
 
