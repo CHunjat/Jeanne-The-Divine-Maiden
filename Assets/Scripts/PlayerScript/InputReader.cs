@@ -159,4 +159,17 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
             Debug.Log("✋ [입력] 찌르기 키 떨어짐! (Held = false)"); // 👈 추가
         }
     }
+
+    public bool GuardHeld;
+    public void OnGuard(InputAction.CallbackContext context)
+    {
+        if(context.started)
+        {
+            GuardHeld = true;
+        }
+        else if (context.canceled)
+        {
+            GuardHeld = false;
+        }
+    }
 }
